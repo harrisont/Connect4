@@ -3,7 +3,8 @@ import pygame
 import sys
 
 class View:
-    _WINDOW_SIZE = (800, 600)
+    _WINDOW_SIZE_X = 800
+    _WINDOW_SIZE_Y = 600
     _FONT_SIZE = 36
     _BACKGROUND_COLOR = pygame.Color(128, 128, 128)
 
@@ -20,7 +21,7 @@ class View:
     def run(self):
         self.print_controls()
 
-        self._screen = pygame.display.set_mode(self._WINDOW_SIZE, pygame.DOUBLEBUF)
+        self._screen = pygame.display.set_mode((self._WINDOW_SIZE_X, self._WINDOW_SIZE_Y), pygame.DOUBLEBUF)
 
         while True:
             self._handle_events()
