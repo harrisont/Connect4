@@ -5,8 +5,13 @@ import sys
 class View:
     _WINDOW_SIZE_X = 1024
     _WINDOW_SIZE_Y = 768
+
     _FONT_SIZE = 36
+
     _BACKGROUND_COLOR = pygame.Color(128, 128, 128)
+
+    _BOARD_SIZE_X = 7
+    _BOARD_SIZE_Y = 6
     _BOARD_COLOR = pygame.Color(0, 116, 179)
     _BOARD_MARGIN = 50
     _BOARD_OPENING_RADIUS = 40
@@ -15,7 +20,7 @@ class View:
     _KEY_QUIT = pygame.K_ESCAPE
 
     def __init__(self):
-        self._model = model.Model()
+        self._model = model.Model((self._BOARD_SIZE_X, self._BOARD_SIZE_Y))
 
         pygame.init()
         pygame.display.set_caption('Connect Four')
