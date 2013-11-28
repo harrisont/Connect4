@@ -10,6 +10,8 @@ class View:
     _KEY_QUIT = pygame.K_ESCAPE
 
     def __init__(self):
+        self._model = model.Model()
+
         pygame.init()
         pygame.display.set_caption('Connect Four')
         self._fps_clock = pygame.time.Clock()
