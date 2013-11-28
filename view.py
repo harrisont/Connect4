@@ -7,6 +7,8 @@ class View:
     _WINDOW_SIZE_Y = 600
     _FONT_SIZE = 36
     _BACKGROUND_COLOR = pygame.Color(128, 128, 128)
+    _BOARD_COLOR = pygame.Color(0, 116, 179)
+    _BOARD_MARGIN = 50
 
     _KEY_QUIT = pygame.K_ESCAPE
 
@@ -53,9 +55,16 @@ class View:
     def _draw(self):
         self._screen.fill(self._BACKGROUND_COLOR)
 
-        #...
+        self._draw_board()
 
         pygame.display.flip()
+
+    def _draw_board(self):
+        board_rect = (self._BOARD_MARGIN,
+                      self._BOARD_MARGIN,
+                      self._WINDOW_SIZE_X - 2*self._BOARD_MARGIN,
+                      self._WINDOW_SIZE_Y - 2*self._BOARD_MARGIN)
+        pygame.draw.rect(self._screen, self._BOARD_COLOR, board_rect, 0)
 
 def main():
     view = View()
