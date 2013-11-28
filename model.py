@@ -29,8 +29,7 @@ class Model:
         Traceback (most recent call last):
         ValueError: Invalid position
         """
-        if not (0 <= x < self.size_x and 0 <= y < self.size_y):
-            raise ValueError('Invalid position')
+        self._validate_opening(x, y)
         return self._openings[x][y]
 
     def drop_piece(self, piece, x):
@@ -46,6 +45,17 @@ class Model:
         """
         # TODO: actually drop the piece
         self._openings[x][0] = piece
+
+    def _set_piece_at_opening(self, piece, x, y):
+        """
+        @param piece (Piece)
+        """
+        self._validate_opening(x, y)
+        self._openings[x][y] = piece
+
+    def _validate_opening(self, x, y):
+        if not (0 <= x < self.size_x and 0 <= y < self.size_y):
+            raise ValueError('Invalid position')
 
 def run_tests():
     """
