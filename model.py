@@ -3,8 +3,8 @@ class Model:
     _SIZE_Y = 6
 
     def __init__(self):
-        self._size_x = self._SIZE_X
-        self._size_y = self._SIZE_Y
+        self.size_x = self._SIZE_X
+        self.size_y = self._SIZE_Y
 
 def run_tests():
     """

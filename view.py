@@ -3,12 +3,14 @@ import pygame
 import sys
 
 class View:
-    _WINDOW_SIZE_X = 800
-    _WINDOW_SIZE_Y = 600
+    _WINDOW_SIZE_X = 1024
+    _WINDOW_SIZE_Y = 768
     _FONT_SIZE = 36
     _BACKGROUND_COLOR = pygame.Color(128, 128, 128)
     _BOARD_COLOR = pygame.Color(0, 116, 179)
     _BOARD_MARGIN = 50
+    _BOARD_OPENING_RADIUS = 40
+    _BOARD_OPENING_MARGIN = 15
 
     _KEY_QUIT = pygame.K_ESCAPE
 
@@ -60,11 +62,31 @@ class View:
         pygame.display.flip()
 
     def _draw_board(self):
-        board_rect = (self._BOARD_MARGIN,
-                      self._BOARD_MARGIN,
-                      self._WINDOW_SIZE_X - 2*self._BOARD_MARGIN,
-                      self._WINDOW_SIZE_Y - 2*self._BOARD_MARGIN)
+        board_rect = self._get_board_rect()
         pygame.draw.rect(self._screen, self._BOARD_COLOR, board_rect, 0)
+
+        for x in range(self._model.size_x):
+            for y in range(self._model.size_y):
+                opening_center = self._get_opening_center(x, y)
+                color = self._BACKGROUND_COLOR
+                pygame.draw.circle(self._screen, color, opening_center, self._BOARD_OPENING_RADIUS)
+
+    def _get_board_position(self):
+        return (self._BOARD_MARGIN, self._BOARD_MARGIN)
+
+    def _get_board_rect(self):
+        """Returns the (left, top, width, height) of the board."""
+        board_x, board_y = self._get_board_position()
+        size_per_opening = self._BOARD_OPENING_MARGIN + 2*self._BOARD_OPENING_RADIUS
+        return (board_x,
+                board_y,
+                self._BOARD_OPENING_MARGIN + self._model.size_x * size_per_opening,
+                self._BOARD_OPENING_MARGIN + self._model.size_y * size_per_opening)
+
+    def _get_opening_center(self, x, y):
+        board_x, board_y = self._get_board_position()
+        return (board_x + (x+1) * self._BOARD_OPENING_MARGIN + (2*x + 1) * self._BOARD_OPENING_RADIUS,
+                board_y + (y+1) * self._BOARD_OPENING_MARGIN + (2*y + 1) * self._BOARD_OPENING_RADIUS)
 
 def main():
     view = View()
