@@ -1,10 +1,12 @@
+class ColumnFullError(Exception):
+    pass
+
 class Piece:
     none = 0
     player1 = 1
     player2 = 2
 
 class Model:
-
     def __init__(self, size):
         """
         @param size (columns, rows)
@@ -36,15 +38,45 @@ class Model:
         """
         @param piece (Piece)
 
-        >>> m = Model((4, 4))
-        >>> m.get_piece_at_opening(2, 0)
-        0
+        >>> m = Model((4, 2))
         >>> m.drop_piece(Piece.player1, 2)
         >>> m.get_piece_at_opening(2, 0)
         1
+        >>> m.get_piece_at_opening(2, 1)
+        0
+        >>> m.get_piece_at_opening(1, 0)
+        0
+        >>> m.get_piece_at_opening(3, 0)
+        0
+        >>> m.drop_piece(Piece.player2, 2)
+        >>> m.get_piece_at_opening(2, 0)
+        1
+        >>> m.get_piece_at_opening(2, 1)
+        2
+        >>> m.get_piece_at_opening(1, 0)
+        0
+        >>> m.get_piece_at_opening(3, 0)
+        0
+        >>> m.drop_piece(Piece.player1, 1)
+        >>> m.get_piece_at_opening(1, 0)
+        1
+        >>> m.get_piece_at_opening(1, 1)
+        0
+        >>> m.get_piece_at_opening(2, 0)
+        1
+        >>> m.get_piece_at_opening(2, 1)
+        2
+        >>> m.get_piece_at_opening(3, 0)
+        0
+        >>> m.drop_piece(Piece.player1, 2)
+        Traceback (most recent call last):
+        ColumnFullError
         """
-        # TODO: actually drop the piece
-        self._openings[x][0] = piece
+        for y in range(self.size_y):
+            if self.get_piece_at_opening(x, y) == Piece.none:
+                self._set_piece_at_opening(piece, x, y)
+                return
+        raise ColumnFullError
 
     def _set_piece_at_opening(self, piece, x, y):
         """
