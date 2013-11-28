@@ -20,7 +20,7 @@ class View:
     def run(self):
         self.print_controls()
 
-        self.screen = pygame.display.set_mode(self._WINDOW_SIZE, pygame.DOUBLEBUF)
+        self._screen = pygame.display.set_mode(self._WINDOW_SIZE, pygame.DOUBLEBUF)
 
         while True:
             self._handle_events()
@@ -50,7 +50,7 @@ class View:
         pass
 
     def _draw(self):
-        self.screen.fill(self._BACKGROUND_COLOR)
+        self._screen.fill(self._BACKGROUND_COLOR)
 
         #...
 
