@@ -12,7 +12,7 @@ class View:
     def __init__(self):
         pygame.init()
         pygame.display.set_caption('Connect Four')
-        self.fpsClock = pygame.time.Clock()
+        self._fps_clock = pygame.time.Clock()
         self._font = pygame.font.Font(None, self._FONT_SIZE)
 
     def run(self):
@@ -26,7 +26,7 @@ class View:
             self._draw()
 
             # Wait long enough to run at 30 FPS.
-            self.fpsClock.tick(30)
+            self._fps_clock.tick(30)
 
     def print_controls(self):
         print('Controls:')
