@@ -13,6 +13,10 @@ class View:
     _BOARD_SIZE_X = 7
     _BOARD_SIZE_Y = 6
     _BOARD_COLOR = pygame.Color(0, 116, 179)
+    _PIECE_COLORS = [
+        _BACKGROUND_COLOR,
+        pygame.Color(255, 0, 0),
+        pygame.Color(0, 0, 0)]
     _BOARD_MARGIN = 50
     _BOARD_OPENING_RADIUS = 40
     _BOARD_OPENING_MARGIN = 15
@@ -73,7 +77,8 @@ class View:
         for x in range(self._model.size_x):
             for y in range(self._model.size_y):
                 opening_center = self._get_opening_center(x, y)
-                color = self._BACKGROUND_COLOR
+                piece = self._model.get_piece_at_opening(x, y)
+                color = self._get_piece_color(piece)
                 pygame.draw.circle(self._screen, color, opening_center, self._BOARD_OPENING_RADIUS)
 
     def _get_board_position(self):
@@ -92,6 +97,9 @@ class View:
         board_x, board_y = self._get_board_position()
         return (board_x + (x+1) * self._BOARD_OPENING_MARGIN + (2*x + 1) * self._BOARD_OPENING_RADIUS,
                 board_y + (y+1) * self._BOARD_OPENING_MARGIN + (2*y + 1) * self._BOARD_OPENING_RADIUS)
+
+    def _get_piece_color(self, piece):
+        return self._PIECE_COLORS[piece]
 
 def main():
     view = View()
