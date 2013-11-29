@@ -34,8 +34,12 @@ class Model:
     def drop_piece(self, piece, x):
         """
         @param piece (Piece)
-
         >>> m = Model((4, 2))
+
+        >>> m.drop_piece(Piece.none, 2)
+        Traceback (most recent call last):
+        ValueError: Invalid piece
+
         >>> m.drop_piece(Piece.player1, 2)
         >>> m.get_piece_at_opening(2, 0)
         1
@@ -45,6 +49,7 @@ class Model:
         0
         >>> m.get_piece_at_opening(3, 0)
         0
+
         >>> m.drop_piece(Piece.player2, 2)
         >>> m.get_piece_at_opening(2, 0)
         1
@@ -54,6 +59,7 @@ class Model:
         0
         >>> m.get_piece_at_opening(3, 0)
         0
+
         >>> m.drop_piece(Piece.player1, 1)
         >>> m.get_piece_at_opening(1, 0)
         1
@@ -65,10 +71,14 @@ class Model:
         2
         >>> m.get_piece_at_opening(3, 0)
         0
+
         >>> m.drop_piece(Piece.player1, 2)
         Traceback (most recent call last):
         RuntimeError: Cannot drop piece at column 2 because it is full.
         """
+        if piece == Piece.none:
+            raise ValueError('Invalid piece')
+
         for y in range(self.size_y):
             if self.get_piece_at_opening(x, y) == Piece.none:
                 self._set_piece_at_opening(piece, x, y)
