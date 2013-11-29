@@ -23,10 +23,10 @@ class Model:
         0
         >>> m.get_piece_at_opening(-1, -1)
         Traceback (most recent call last):
-        ValueError: Invalid position
+        ValueError: Invalid position (-1,-1)
         >>> m.get_piece_at_opening(m.size_x - 1, m.size_y)
         Traceback (most recent call last):
-        ValueError: Invalid position
+        ValueError: Invalid position (2,3)
         """
         self._validate_opening(x, y)
         return self._openings[x][y]
@@ -84,7 +84,7 @@ class Model:
 
     def _validate_opening(self, x, y):
         if not (0 <= x < self.size_x and 0 <= y < self.size_y):
-            raise ValueError('Invalid position')
+            raise ValueError('Invalid position ({},{})'.format(x, y))
 
 def run_tests():
     """
