@@ -82,6 +82,15 @@ class View:
         if self._model.is_column_full(x):
             return
         self._model.drop_piece(piece, x)
+        self._end_turn()
+
+    def _end_turn(self):
+        if self._current_player_piece == model.Piece.player1:
+            self._current_player_piece = model.Piece.player2
+        elif self._current_player_piece == model.Piece.player2:
+            self._current_player_piece = model.Piece.player1
+        else:
+            raise RuntimeError('Invalid current player piece')
 
     def _move(self, dx):
         self._drop_x = (self._drop_x + dx) % self._model.size_x
