@@ -29,7 +29,7 @@ class View:
     def __init__(self):
         self._model = model.Model((self._BOARD_SIZE_X, self._BOARD_SIZE_Y))
 
-        self._current_player = model.Piece.player1
+        self._current_player_piece = model.Piece.player1
         self._drop_x = int(self._model.size_x / 2)
 
         pygame.init()
@@ -64,7 +64,7 @@ class View:
                 if event.key == self._KEY_QUIT:
                     pygame.event.post(pygame.event.Event(pygame.QUIT))
                 elif event.key == self._KEY_DROP_PIECE:
-                    self._attempt_to_drop_piece(self._current_player, self._drop_x)
+                    self._attempt_to_drop_piece(self._current_player_piece, self._drop_x)
                 elif event.key == self._KEY_MOVE_LEFT:
                     self._move(-1)
                 elif event.key == self._KEY_MOVE_RIGHT:
@@ -93,6 +93,7 @@ class View:
         self._screen.fill(self._BACKGROUND_COLOR)
 
         self._draw_board()
+        self._draw_drop_location()
 
         pygame.display.flip()
 
@@ -102,10 +103,16 @@ class View:
 
         for x in range(self._model.size_x):
             for y in range(self._model.size_y):
-                opening_center = self._get_opening_center(x, y)
                 piece = self._model.get_piece_at_opening(x, y)
-                color = self._get_piece_color(piece)
-                pygame.draw.circle(self._screen, color, opening_center, self._BOARD_OPENING_RADIUS)
+                self._draw_piece(piece, x, y)
+
+    def _draw_piece(self, piece, x, y):
+        opening_center = self._get_opening_center(x, y)
+        color = self._get_piece_color(piece)
+        pygame.draw.circle(self._screen, color, opening_center, self._BOARD_OPENING_RADIUS)
+
+    def _draw_drop_location(self):
+        self._draw_piece(self._current_player_piece, self._drop_x, self._model.size_y)
 
     def _get_board_position(self):
         return (self._BOARD_MARGIN, self._BOARD_MARGIN)
