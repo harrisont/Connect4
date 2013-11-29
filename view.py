@@ -15,8 +15,12 @@ class View:
     _BOARD_COLOR = pygame.Color(0, 116, 179)
     _PIECE_COLORS = [
         _BACKGROUND_COLOR,
-        pygame.Color(255, 0, 0),
-        pygame.Color(0, 0, 0)]
+        pygame.Color(200, 0, 0),
+        pygame.Color(10, 10, 10)]
+    _POTENTIAL_PIECE_COLORS = [
+        _BACKGROUND_COLOR,
+        pygame.Color(164, 64, 64),
+        pygame.Color(69, 69, 69)]
     _BOARD_MARGIN = 50
     _BOARD_OPENING_RADIUS = 40
     _BOARD_OPENING_MARGIN = 15
@@ -119,14 +123,7 @@ class View:
         """
         @param potential_piece (Boolean) if True, draws the piece as a potential piece
         """
-        color = self._get_piece_color(piece)
-        if piece != model.Piece.none and potential_piece:
-            none_color = self._get_piece_color(model.Piece.none)
-            color = pygame.Color(
-                        (color.r + none_color.r) // 2,
-                        (color.g + none_color.g) // 2,
-                        (color.b + none_color.b) // 2)
-
+        color = self._get_piece_color(piece, potential_piece)
         opening_center = self._get_opening_center(x, y)
         pygame.draw.circle(self._screen, color, opening_center, self._BOARD_OPENING_RADIUS)
 
@@ -154,8 +151,11 @@ class View:
         return (board_x + (x+1) * self._BOARD_OPENING_MARGIN + (2*x + 1) * self._BOARD_OPENING_RADIUS,
                 board_y + (flipped_y+1) * self._BOARD_OPENING_MARGIN + (2*flipped_y + 1) * self._BOARD_OPENING_RADIUS)
 
-    def _get_piece_color(self, piece):
-        return self._PIECE_COLORS[piece]
+    def _get_piece_color(self, piece, potential_piece):
+        if potential_piece:
+            return self._POTENTIAL_PIECE_COLORS[piece]
+        else:
+            return self._PIECE_COLORS[piece]
 
 def main():
     view = View()
