@@ -1,6 +1,3 @@
-class ColumnFullError(Exception):
-    pass
-
 class Piece:
     none = 0
     player1 = 1
@@ -70,13 +67,13 @@ class Model:
         0
         >>> m.drop_piece(Piece.player1, 2)
         Traceback (most recent call last):
-        ColumnFullError
+        RuntimeError: Cannot drop piece at column 2 because it is full.
         """
         for y in range(self.size_y):
             if self.get_piece_at_opening(x, y) == Piece.none:
                 self._set_piece_at_opening(piece, x, y)
                 return
-        raise ColumnFullError
+        raise RuntimeError('Cannot drop piece at column {} because it is full.'.format(x))
 
     def _set_piece_at_opening(self, piece, x, y):
         """
