@@ -95,8 +95,9 @@ class View:
 
     def _get_opening_center(self, x, y):
         board_x, board_y = self._get_board_position()
+        flipped_y = self._model.size_y - y - 1
         return (board_x + (x+1) * self._BOARD_OPENING_MARGIN + (2*x + 1) * self._BOARD_OPENING_RADIUS,
-                board_y + (y+1) * self._BOARD_OPENING_MARGIN + (2*y + 1) * self._BOARD_OPENING_RADIUS)
+                board_y + (flipped_y+1) * self._BOARD_OPENING_MARGIN + (2*flipped_y + 1) * self._BOARD_OPENING_RADIUS)
 
     def _get_piece_color(self, piece):
         return self._PIECE_COLORS[piece]
