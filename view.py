@@ -61,17 +61,19 @@ class View:
                 if event.key == self._KEY_QUIT:
                     pygame.event.post(pygame.event.Event(pygame.QUIT))
                 elif event.key == self._KEY_DROP_PIECE:
-                    self._drop_piece(self._current_player, self._drop_x)
+                    self._attempt_to_drop_piece(self._current_player, self._drop_x)
 
     def _quit(self):
         pygame.quit()
         sys.exit()
 
-    def _drop_piece(self, piece, x):
+    def _attempt_to_drop_piece(self, piece, x):
         """
         @param piece (model.Piece)
         @param x (Number) the column to drop the piece into
         """
+        if self._model.is_column_full(x):
+            return
         self._model.drop_piece(piece, x)
 
     def _tick(self):
