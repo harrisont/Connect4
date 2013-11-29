@@ -3,6 +3,11 @@ class Piece:
     player1 = 1
     player2 = 2
 
+class GameState:
+    playing = 0
+    player1_won = 1
+    player2_won = 2
+
 class Model:
     def __init__(self, size):
         """
@@ -10,6 +15,7 @@ class Model:
         """
         self.size_x, self.size_y = size
         self._initialize_board()
+        self._game_state = GameState.playing
 
     def _initialize_board(self):
         self._openings = [[Piece.none for y in range(self.size_y)] for x in range(self.size_x)]
@@ -119,6 +125,9 @@ class Model:
     def _validate_opening(self, x, y):
         if not (0 <= x < self.size_x and 0 <= y < self.size_y):
             raise ValueError('Invalid position ({},{})'.format(x, y))
+
+    def get_state(self):
+        return self._game_state
 
 def run_tests():
     """

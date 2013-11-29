@@ -96,6 +96,18 @@ class View:
         else:
             raise RuntimeError('Invalid current player piece')
 
+    def _check_for_win(self):
+        winning_player = None
+        game_state = self._model.get_state()
+        if game_state == model.GameState.player1_won:
+            winning_player = 1
+        elif game_state == model.GameState.player2_won:
+            winning_player = 2
+
+        if winning_player:
+            winning_player_name = 'Player {}'.format(winning_player)
+            self._draw_player_won_message(winning_player_name)
+
     def _move(self, dx):
         self._drop_x = (self._drop_x + dx) % self._model.size_x
 
@@ -107,6 +119,8 @@ class View:
 
         self._draw_board()
         self._draw_drop_location()
+
+        self._check_for_win()
 
         pygame.display.flip()
 
@@ -156,6 +170,14 @@ class View:
             return self._POTENTIAL_PIECE_COLORS[piece]
         else:
             return self._PIECE_COLORS[piece]
+
+    def _draw_player_won_message(self, winning_player_name):
+        message = '{} Won!'.format(winning_player_name)
+        message_color = pygame.Color(255, 255, 255)
+        message_surface = self._font.render(message, True, message_color)
+        message_rect = message_surface.get_rect()
+        message_rect.topleft = (5, 5)
+        self._screen.blit(message_surface, message_rect)
 
 def main():
     view = View()
