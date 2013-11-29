@@ -23,6 +23,8 @@ class View:
 
     _KEY_QUIT = pygame.K_ESCAPE
     _KEY_DROP_PIECE = pygame.K_RETURN
+    _KEY_MOVE_LEFT = pygame.K_LEFT
+    _KEY_MOVE_RIGHT = pygame.K_RIGHT
 
     def __init__(self):
         self._model = model.Model((self._BOARD_SIZE_X, self._BOARD_SIZE_Y))
@@ -52,6 +54,7 @@ class View:
         print('Controls:')
         print('\t{}: Quit'.format(pygame.key.name(self._KEY_QUIT)))
         print('\t{}: Drop Piece'.format(pygame.key.name(self._KEY_DROP_PIECE)))
+        print('\t{}/{}: Move'.format(pygame.key.name(self._KEY_MOVE_LEFT), pygame.key.name(self._KEY_MOVE_LEFT)))
 
     def _handle_events(self):
         for event in pygame.event.get():
@@ -62,6 +65,10 @@ class View:
                     pygame.event.post(pygame.event.Event(pygame.QUIT))
                 elif event.key == self._KEY_DROP_PIECE:
                     self._attempt_to_drop_piece(self._current_player, self._drop_x)
+                elif event.key == self._KEY_MOVE_LEFT:
+                    self._move(-1)
+                elif event.key == self._KEY_MOVE_RIGHT:
+                    self._move(1)
 
     def _quit(self):
         pygame.quit()
@@ -75,6 +82,9 @@ class View:
         if self._model.is_column_full(x):
             return
         self._model.drop_piece(piece, x)
+
+    def _move(self, dx):
+        self._drop_x = (self._drop_x + dx) % self._model.size_x
 
     def _tick(self):
         pass
