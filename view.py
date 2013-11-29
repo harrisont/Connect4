@@ -106,13 +106,26 @@ class View:
                 piece = self._model.get_piece_at_opening(x, y)
                 self._draw_piece(piece, x, y)
 
-    def _draw_piece(self, piece, x, y):
-        opening_center = self._get_opening_center(x, y)
+    def _draw_piece(self, piece, x, y, potential_piece=False):
+        """
+        @param potential_piece (Boolean) if True, draws the piece as a potential piece
+        """
         color = self._get_piece_color(piece)
+        if piece != model.Piece.none and potential_piece:
+            none_color = self._get_piece_color(model.Piece.none)
+            color = pygame.Color(
+                        (color.r + none_color.r) // 2,
+                        (color.g + none_color.g) // 2,
+                        (color.b + none_color.b) // 2)
+
+        opening_center = self._get_opening_center(x, y)
         pygame.draw.circle(self._screen, color, opening_center, self._BOARD_OPENING_RADIUS)
 
     def _draw_drop_location(self):
         self._draw_piece(self._current_player_piece, self._drop_x, self._model.size_y)
+
+        drop_y = self._model.get_drop_row(self._drop_x)
+        self._draw_piece(self._current_player_piece, self._drop_x, drop_y, potential_piece=True)
 
     def _get_board_position(self):
         return (self._BOARD_MARGIN, self._BOARD_MARGIN)

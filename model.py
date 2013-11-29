@@ -94,11 +94,20 @@ class Model:
         if piece == Piece.none:
             raise ValueError('Invalid piece')
 
+        y = self.get_drop_row(x)
+        if y >= 0:
+            self._set_piece_at_opening(piece, x, y)
+        else:
+            raise RuntimeError('Cannot drop piece at column {} because it is full.'.format(x))
+
+    def get_drop_row(self, x):
+        """
+        @return the y-location that the piece would end up at, or -1 if the column is full
+        """
         for y in range(self.size_y):
             if self.get_piece_at_opening(x, y) == Piece.none:
-                self._set_piece_at_opening(piece, x, y)
-                return
-        raise RuntimeError('Cannot drop piece at column {} because it is full.'.format(x))
+                return y
+        return -1
 
     def _set_piece_at_opening(self, piece, x, y):
         """
