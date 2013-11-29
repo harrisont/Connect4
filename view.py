@@ -22,9 +22,13 @@ class View:
     _BOARD_OPENING_MARGIN = 15
 
     _KEY_QUIT = pygame.K_ESCAPE
+    _KEY_DROP_PIECE = pygame.K_RETURN
 
     def __init__(self):
         self._model = model.Model((self._BOARD_SIZE_X, self._BOARD_SIZE_Y))
+
+        self._current_player = model.Piece.player1
+        self._drop_x = int(self._model.size_x / 2)
 
         pygame.init()
         pygame.display.set_caption('Connect Four')
@@ -47,6 +51,7 @@ class View:
     def print_controls(self):
         print('Controls:')
         print('\t{}: Quit'.format(pygame.key.name(self._KEY_QUIT)))
+        print('\t{}: Drop Piece'.format(pygame.key.name(self._KEY_DROP_PIECE)))
 
     def _handle_events(self):
         for event in pygame.event.get():
@@ -55,10 +60,19 @@ class View:
             elif event.type == pygame.KEYDOWN:
                 if event.key == self._KEY_QUIT:
                     pygame.event.post(pygame.event.Event(pygame.QUIT))
+                elif event.key == self._KEY_DROP_PIECE:
+                    self._drop_piece(self._current_player, self._drop_x)
 
     def _quit(self):
         pygame.quit()
         sys.exit()
+
+    def _drop_piece(self, piece, x):
+        """
+        @param piece (model.Piece)
+        @param x (Number) the column to drop the piece into
+        """
+        self._model.drop_piece(piece, x)
 
     def _tick(self):
         pass
