@@ -31,6 +31,21 @@ class Model:
         self._validate_opening(x, y)
         return self._openings[x][y]
 
+    def is_column_full(self, x):
+        """
+        >>> m = Model((2, 2))
+        >>> m.is_column_full(0)
+        False
+        >>> m.drop_piece(Piece.player1, 0)
+        >>> m.is_column_full(0)
+        False
+        >>> m.drop_piece(Piece.player2, 0)
+        >>> m.is_column_full(0)
+        True
+        """
+        top_row = self.size_y - 1
+        return self.get_piece_at_opening(x, top_row) != Piece.none
+
     def drop_piece(self, piece, x):
         """
         @param piece (Piece)
