@@ -14,6 +14,7 @@ class View:
 
     _BACKGROUND_COLOR = pygame.Color(128, 128, 128)
 
+    _CONSECUTIVE_PIECES_TO_WIN = 4
     _BOARD_SIZE_X = 7
     _BOARD_SIZE_Y = 6
     _BOARD_COLOR = pygame.Color(0, 116, 179)
@@ -36,7 +37,7 @@ class View:
 
     def __init__(self):
         self._state = ViewState.PLAYING
-        self._model = model.Model((self._BOARD_SIZE_X, self._BOARD_SIZE_Y))
+        self._model = model.Model(self._CONSECUTIVE_PIECES_TO_WIN, (self._BOARD_SIZE_X, self._BOARD_SIZE_Y))
 
         self._current_player_piece = model.Piece.PLAYER1
         self._drop_x = int(self._model.size_x / 2)

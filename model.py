@@ -9,10 +9,11 @@ class GameState:
     PLAYER2_WON = 2
 
 class Model:
-    def __init__(self, size):
+    def __init__(self, consecutive_pieces_to_win, size):
         """
         @param size (columns, rows)
         """
+        self.consecutive_pieces_to_win = consecutive_pieces_to_win
         self.size_x, self.size_y = size
         self._initialize_board()
         self._game_state = GameState.PLAYING
@@ -22,14 +23,17 @@ class Model:
 
     def get_piece_at_opening(self, x, y):
         """
-        >>> m = Model((3, 3))
+        >>> m = Model(4, (3, 3))
         >>> m.get_piece_at_opening(0, 0)
         0
+
         >>> m.get_piece_at_opening(m.size_x - 1, m.size_y - 1)
         0
+
         >>> m.get_piece_at_opening(-1, -1)
         Traceback (most recent call last):
         ValueError: Invalid position (-1,-1)
+
         >>> m.get_piece_at_opening(m.size_x - 1, m.size_y)
         Traceback (most recent call last):
         ValueError: Invalid position (2,3)
@@ -39,7 +43,7 @@ class Model:
 
     def is_column_full(self, x):
         """
-        >>> m = Model((2, 2))
+        >>> m = Model(4, (2, 2))
         >>> m.is_column_full(0)
         False
         >>> m.drop_piece(Piece.PLAYER1, 0)
@@ -55,7 +59,7 @@ class Model:
     def drop_piece(self, piece, x):
         """
         @param piece (Piece)
-        >>> m = Model((4, 2))
+        >>> m = Model(4, (4, 2))
 
         >>> m.drop_piece(Piece.NONE, 2)
         Traceback (most recent call last):
