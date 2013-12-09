@@ -225,6 +225,13 @@ class Model:
         ... 0, 0, 0, 0,
         ... 0, 0, 0, 0,
         ... 0, 1, 1, 0])
+        >>> m._check_for_win(Piece.PLAYER1, 3, 0)
+        True
+
+        >>> m = Model._create_from_picture(3, (4, 3), [
+        ... 0, 0, 0, 0,
+        ... 0, 0, 0, 0,
+        ... 0, 1, 1, 0])
         >>> m._check_for_win(Piece.PLAYER2, 0, 0)
         False
 
