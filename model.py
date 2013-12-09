@@ -199,7 +199,7 @@ class Model:
         @return True if the player of the piece won.
 
         Horizontal checks:
-
+        -----------------------------------------------------------------------
         >>> m = Model._create_from_picture(3, (4, 3), [
         ... 0, 0, 0, 0,
         ... 0, 0, 0, 0,
@@ -257,7 +257,7 @@ class Model:
         True
 
         Vertical checks:
-
+        -----------------------------------------------------------------------
         >>> m = Model._create_from_picture(3, (4, 3), [
         ... 0, 0, 0, 0,
         ... 0, 0, 0, 0,
@@ -284,6 +284,43 @@ class Model:
         ... 0, 0, 0, 2,
         ... 0, 0, 0, 2])
         >>> m._check_for_win(Piece.PLAYER2, 3, 2)
+        True
+
+        Diagonal checks:
+        -----------------------------------------------------------------------
+        >>> m = Model._create_from_picture(3, (4, 3), [
+        ... 0, 0, 0, 0,
+        ... 0, 0, 0, 0,
+        ... 1, 2, 0, 0])
+        >>> m._check_for_win(Piece.PLAYER1, 1, 1)
+        False
+
+        >>> m = Model._create_from_picture(3, (4, 3), [
+        ... 0, 0, 0, 0,
+        ... 0, 1, 2, 0,
+        ... 1, 2, 2, 1])
+        >>> m._check_for_win(Piece.PLAYER1, 2, 2)
+        True
+
+        >>> m = Model._create_from_picture(3, (4, 3), [
+        ... 0, 0, 1, 0,
+        ... 0, 1, 2, 0,
+        ... 0, 2, 2, 1])
+        >>> m._check_for_win(Piece.PLAYER1, 0, 0)
+        True
+
+        >>> m = Model._create_from_picture(3, (4, 3), [
+        ... 0, 1, 0, 0,
+        ... 0, 2, 0, 0,
+        ... 0, 1, 2, 1])
+        >>> m._check_for_win(Piece.PLAYER1, 0, 1)
+        False
+
+        >>> m = Model._create_from_picture(3, (4, 3), [
+        ... 0, 1, 0, 0,
+        ... 0, 2, 0, 0,
+        ... 0, 1, 2, 1])
+        >>> m._check_for_win(Piece.PLAYER1, 2, 1)
         True
         """
         # Check for a win horizontally
@@ -317,6 +354,25 @@ class Model:
                     break
             if won:
                 return True
+
+        # Check for a win diagonally
+        for slope in (1, -1):
+            for delta_start_x, delta_start_y in ((i, slope*i) for i in range(self.consecutive_pieces_to_win)):
+                start_x = piece_x - delta_start_x
+                start_y = piece_y - delta_start_y
+                won = True
+                for delta_x, delta_y in ((i, slope*i) for i in range(self.consecutive_pieces_to_win)):
+                    # Don't need to check the piece that was just placed
+                    if delta_x == delta_start_x and delta_y == delta_start_y:
+                        continue
+                    x = start_x + delta_x
+                    y = start_y + delta_y
+                    current_piece = self._get_piece_at_opening_or_none(x, y)
+                    if current_piece != piece:
+                        won = False
+                        break
+                if won:
+                    return True
 
         return False
 
