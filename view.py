@@ -154,7 +154,8 @@ class View:
         self._draw_piece(self._current_player_piece, self._drop_x, self._model.size_y)
 
         drop_y = self._model.get_drop_row(self._drop_x)
-        self._draw_piece(self._current_player_piece, self._drop_x, drop_y, potential_piece=True)
+        if drop_y >= 0:
+            self._draw_piece(self._current_player_piece, self._drop_x, drop_y, potential_piece=True)
 
     def _get_board_position(self):
         return (self._BOARD_MARGIN, self._BOARD_MARGIN)
