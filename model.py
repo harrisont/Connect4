@@ -27,18 +27,20 @@ class Model:
         @param size (columns, rows)
         @param pieces (Piece[])
 
-        >>> m = Model._create_from_picture(3, (3, 3), [
-        ... 0, 0, 2,
-        ... 0, 1, 1,
-        ... 1, 2, 2])
+        >>> m = Model._create_from_picture(3, (4, 3), [
+        ... 0, 0, 2, 0,
+        ... 0, 1, 1, 0,
+        ... 1, 2, 2, 1])
         >>> print(m)
-        002
-        011
-        122
+        0020
+        0110
+        1221
+        >>> m.get_piece_at_opening(0, 0)
+        1
         """
         model = Model(consecutive_pieces_to_win, size)
         index = 0
-        for y in range(model.size_y):
+        for y in range(model.size_y - 1, -1, -1):
             for x in range(model.size_x):
                 piece = pieces[index]
                 model._set_piece_at_opening(piece, x, y)
@@ -208,13 +210,32 @@ class Model:
         return self._game_state
 
     def __str__(self):
+        """
+        >>> m = Model(3, (4, 3))
+        >>> print(m)
+        0000
+        0000
+        0000
+
+        >>> m._set_piece_at_opening(Piece.PLAYER1, 0, 0)
+        >>> m._set_piece_at_opening(Piece.PLAYER2, 1, 0)
+        >>> m._set_piece_at_opening(Piece.PLAYER2, 2, 0)
+        >>> m._set_piece_at_opening(Piece.PLAYER1, 3, 0)
+        >>> m._set_piece_at_opening(Piece.PLAYER1, 1, 1)
+        >>> m._set_piece_at_opening(Piece.PLAYER1, 2, 1)
+        >>> m._set_piece_at_opening(Piece.PLAYER2, 2, 2)
+        >>> print(m)
+        0020
+        0110
+        1221
+        """
         string = ''
-        for y in range(self.size_y):
-            if y > 0:
-                string += '\n'
+        for y in range(self.size_y-1, -1, -1):
             for x in range(self.size_x):
                 piece = self._openings[x][y]
                 string += str(piece)
+            if y > 0:
+                string += '\n'
         return string
 
 def run_tests():
