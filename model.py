@@ -30,6 +30,10 @@ class Model:
         >>> m.get_piece_at_opening(m.size_x - 1, m.size_y - 1)
         0
 
+        >>> m._set_piece_at_opening(Piece.PLAYER1, 1, 0)
+        >>> m.get_piece_at_opening(1, 0)
+        1
+
         >>> m.get_piece_at_opening(-1, -1)
         Traceback (most recent call last):
         ValueError: Invalid position (-1,-1)
