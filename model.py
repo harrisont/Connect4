@@ -126,8 +126,11 @@ class Model:
         self._validate_opening(x, y)
         self._openings[x][y] = piece
 
+    def _is_valid_opening(self, x, y):
+        return 0 <= x < self.size_x and 0 <= y < self.size_y
+
     def _validate_opening(self, x, y):
-        if not (0 <= x < self.size_x and 0 <= y < self.size_y):
+        if not self._is_valid_opening(x, y):
             raise ValueError('Invalid position ({},{})'.format(x, y))
 
     def get_state(self):
