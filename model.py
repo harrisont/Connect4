@@ -197,7 +197,79 @@ class Model:
         @param piece (Piece) The piece placed.
         @param piece_x,piece_y (Numbers) The position of the last-placed piece.
         @return True if the player of the piece won.
+
+        >>> m = Model._create_from_picture(3, (4, 3), [
+        ... 0, 0, 0, 0,
+        ... 0, 0, 0, 0,
+        ... 0, 0, 0, 0])
+        >>> m._check_for_win(Piece.PLAYER1, 0, 0)
+        False
+
+        >>> m = Model._create_from_picture(3, (4, 3), [
+        ... 0, 0, 0, 0,
+        ... 0, 0, 0, 0,
+        ... 0, 1, 0, 0])
+        >>> m._check_for_win(Piece.PLAYER1, 0, 0)
+        False
+
+        >>> m = Model._create_from_picture(3, (4, 3), [
+        ... 0, 0, 0, 0,
+        ... 0, 0, 0, 0,
+        ... 0, 1, 1, 0])
+        >>> m._check_for_win(Piece.PLAYER1, 0, 0, debug=True)
+        True
+
+        >>> m = Model._create_from_picture(3, (4, 3), [
+        ... 0, 0, 0, 0,
+        ... 0, 0, 0, 0,
+        ... 0, 1, 1, 0])
+        >>> m._check_for_win(Piece.PLAYER2, 0, 0)
+        False
+
+        >>> m = Model._create_from_picture(3, (4, 3), [
+        ... 0, 0, 0, 0,
+        ... 0, 0, 0, 0,
+        ... 0, 0, 0, 0])
+        >>> m._check_for_win(Piece.PLAYER1, 1, 0)
+        False
+
+        >>> m = Model._create_from_picture(3, (4, 3), [
+        ... 0, 0, 0, 0,
+        ... 0, 0, 0, 0,
+        ... 1, 0, 0, 0])
+        >>> m._check_for_win(Piece.PLAYER1, 1, 0)
+        False
+
+        >>> m = Model._create_from_picture(3, (4, 3), [
+        ... 0, 0, 0, 0,
+        ... 0, 0, 0, 0,
+        ... 1, 0, 1, 0])
+        >>> m._check_for_win(Piece.PLAYER1, 1, 0)
+        True
+
+        >>> m = Model._create_from_picture(3, (4, 3), [
+        ... 0, 0, 0, 0,
+        ... 0, 0, 0, 0,
+        ... 1, 1, 0, 0])
+        >>> m._check_for_win(Piece.PLAYER1, 2, 0)
+        True
         """
+        # Check for a win horizontally
+        for delta_start_x in range(self.consecutive_pieces_to_win):
+            start_x = piece_x - delta_start_x
+            won = True
+            for delta_x in range(self.consecutive_pieces_to_win):
+                # Don't need to check the piece that was just placed
+                if delta_x == delta_start_x:
+                    continue
+                x = start_x + delta_x
+                current_piece = self._get_piece_at_opening_or_none(x, piece_y)
+                if current_piece != piece:
+                    won = False
+                    break
+            if won:
+                return True
+
         return False
 
     def _on_player_won(self, piece):
