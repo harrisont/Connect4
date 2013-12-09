@@ -161,6 +161,8 @@ class Model:
         y = self.get_drop_row(x)
         if y >= 0:
             self._set_piece_at_opening(piece, x, y)
+            if self._check_for_win(piece, x, y):
+                self._on_player_won(piece)
         else:
             raise RuntimeError('Cannot drop piece at column {} because it is full.'.format(x))
 
@@ -186,6 +188,21 @@ class Model:
     def _validate_opening(self, x, y):
         if not self._is_valid_opening(x, y):
             raise ValueError('Invalid position ({},{})'.format(x, y))
+
+    def _check_for_win(self, piece, piece_x, piece_y):
+        """
+        Checks for a win caused by a piece just placed at (piece_x, piece_y).
+        @param piece (Piece) The piece placed.
+        @param piece_x,piece_y (Numbers) The position of the last-placed piece.
+        @return True if the player of the piece won.
+        """
+        return False
+
+    def _on_player_won(self, piece):
+        if piece == Piece.PLAYER1:
+            self._game_state = GameState.PLAYER1_WON
+        else:
+            self._game_state = GameState.PLAYER2_WON
 
     def get_state(self):
         return self._game_state
