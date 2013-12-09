@@ -21,6 +21,30 @@ class Model:
     def _initialize_board(self):
         self._openings = [[Piece.NONE for y in range(self.size_y)] for x in range(self.size_x)]
 
+    @staticmethod
+    def _create_from_picture(consecutive_pieces_to_win, size, pieces):
+        """
+        @param size (columns, rows)
+        @param pieces (Piece[])
+
+        >>> m = Model._create_from_picture(3, (3, 3), [
+        ... 0, 0, 2,
+        ... 0, 1, 1,
+        ... 1, 2, 2])
+        >>> print(m)
+        002
+        011
+        122
+        """
+        model = Model(consecutive_pieces_to_win, size)
+        index = 0
+        for y in range(model.size_y):
+            for x in range(model.size_x):
+                piece = pieces[index]
+                model._set_piece_at_opening(piece, x, y)
+                index += 1
+        return model
+
     def get_piece_at_opening(self, x, y):
         """
         >>> m = Model(4, (3, 3))
@@ -139,6 +163,16 @@ class Model:
 
     def get_state(self):
         return self._game_state
+
+    def __str__(self):
+        string = ''
+        for y in range(self.size_y):
+            if y > 0:
+                string += '\n'
+            for x in range(self.size_x):
+                piece = self._openings[x][y]
+                string += str(piece)
+        return string
 
 def run_tests():
     """
