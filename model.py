@@ -193,10 +193,10 @@ class Model:
 
     def _check_for_win(self, piece, piece_x, piece_y):
         """
-        Checks for a win caused by a piece just placed at (piece_x, piece_y).
-        @param piece (Piece) The piece placed.
-        @param piece_x,piece_y (Numbers) The position of the last-placed piece.
-        @return True if the player of the piece won.
+        Checks for a win caused by a piece being placed at (piece_x, piece_y).
+        @param piece (Piece) The piece being placed.
+        @param piece_x,piece_y (Numbers) The position of the piece.
+        @return True if the player of the piece wins.
 
         Horizontal checks:
         -----------------------------------------------------------------------
@@ -330,46 +330,13 @@ class Model:
         >>> m._check_for_win(Piece.PLAYER1, 2, 1)
         True
         """
-        # Check for a win horizontally
-        for delta_start_x in range(self.consecutive_pieces_to_win):
-            start_x = piece_x - delta_start_x
-            won = True
-            for delta_x in range(self.consecutive_pieces_to_win):
-                # Don't need to check the piece that was just placed
-                if delta_x == delta_start_x:
-                    continue
-                x = start_x + delta_x
-                current_piece = self._get_piece_at_opening_or_none(x, piece_y)
-                if current_piece != piece:
-                    won = False
-                    break
-            if won:
-                return True
-
-        # Check for a win vertically
-        for delta_start_y in range(self.consecutive_pieces_to_win):
-            start_y = piece_y - delta_start_y
-            won = True
-            for delta_y in range(self.consecutive_pieces_to_win):
-                # Don't need to check the piece that was just placed
-                if delta_y == delta_start_y:
-                    continue
-                y = start_y + delta_y
-                current_piece = self._get_piece_at_opening_or_none(piece_x, y)
-                if current_piece != piece:
-                    won = False
-                    break
-            if won:
-                return True
-
-        # Check for a win diagonally
-        for slope in (1, -1):
-            for delta_start_x, delta_start_y in ((i, slope*i) for i in range(self.consecutive_pieces_to_win)):
+        for slope_x, slope_y in ((1,0), (0,1), (1,1), (1,-1)):
+            for delta_start_x, delta_start_y in ((slope_x*i, slope_y*i) for i in range(self.consecutive_pieces_to_win)):
                 start_x = piece_x - delta_start_x
                 start_y = piece_y - delta_start_y
                 won = True
-                for delta_x, delta_y in ((i, slope*i) for i in range(self.consecutive_pieces_to_win)):
-                    # Don't need to check the piece that was just placed
+                for delta_x, delta_y in ((slope_x*i, slope_y*i) for i in range(self.consecutive_pieces_to_win)):
+                    # Don't need to check the piece that is being placed
                     if delta_x == delta_start_x and delta_y == delta_start_y:
                         continue
                     x = start_x + delta_x
