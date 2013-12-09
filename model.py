@@ -1,12 +1,12 @@
 class Piece:
-    none = 0
-    player1 = 1
-    player2 = 2
+    NONE = 0
+    PLAYER1 = 1
+    PLAYER2 = 2
 
 class GameState:
-    playing = 0
-    player1_won = 1
-    player2_won = 2
+    PLAYING = 0
+    PLAYER1_WON = 1
+    PLAYER2_WON = 2
 
 class Model:
     def __init__(self, size):
@@ -15,10 +15,10 @@ class Model:
         """
         self.size_x, self.size_y = size
         self._initialize_board()
-        self._game_state = GameState.playing
+        self._game_state = GameState.PLAYING
 
     def _initialize_board(self):
-        self._openings = [[Piece.none for y in range(self.size_y)] for x in range(self.size_x)]
+        self._openings = [[Piece.NONE for y in range(self.size_y)] for x in range(self.size_x)]
 
     def get_piece_at_opening(self, x, y):
         """
@@ -42,26 +42,26 @@ class Model:
         >>> m = Model((2, 2))
         >>> m.is_column_full(0)
         False
-        >>> m.drop_piece(Piece.player1, 0)
+        >>> m.drop_piece(Piece.PLAYER1, 0)
         >>> m.is_column_full(0)
         False
-        >>> m.drop_piece(Piece.player2, 0)
+        >>> m.drop_piece(Piece.PLAYER2, 0)
         >>> m.is_column_full(0)
         True
         """
         top_row = self.size_y - 1
-        return self.get_piece_at_opening(x, top_row) != Piece.none
+        return self.get_piece_at_opening(x, top_row) != Piece.NONE
 
     def drop_piece(self, piece, x):
         """
         @param piece (Piece)
         >>> m = Model((4, 2))
 
-        >>> m.drop_piece(Piece.none, 2)
+        >>> m.drop_piece(Piece.NONE, 2)
         Traceback (most recent call last):
         ValueError: Invalid piece
 
-        >>> m.drop_piece(Piece.player1, 2)
+        >>> m.drop_piece(Piece.PLAYER1, 2)
         >>> m.get_piece_at_opening(2, 0)
         1
         >>> m.get_piece_at_opening(2, 1)
@@ -71,7 +71,7 @@ class Model:
         >>> m.get_piece_at_opening(3, 0)
         0
 
-        >>> m.drop_piece(Piece.player2, 2)
+        >>> m.drop_piece(Piece.PLAYER2, 2)
         >>> m.get_piece_at_opening(2, 0)
         1
         >>> m.get_piece_at_opening(2, 1)
@@ -81,7 +81,7 @@ class Model:
         >>> m.get_piece_at_opening(3, 0)
         0
 
-        >>> m.drop_piece(Piece.player1, 1)
+        >>> m.drop_piece(Piece.PLAYER1, 1)
         >>> m.get_piece_at_opening(1, 0)
         1
         >>> m.get_piece_at_opening(1, 1)
@@ -93,11 +93,11 @@ class Model:
         >>> m.get_piece_at_opening(3, 0)
         0
 
-        >>> m.drop_piece(Piece.player1, 2)
+        >>> m.drop_piece(Piece.PLAYER1, 2)
         Traceback (most recent call last):
         RuntimeError: Cannot drop piece at column 2 because it is full.
         """
-        if piece == Piece.none:
+        if piece == Piece.NONE:
             raise ValueError('Invalid piece')
 
         y = self.get_drop_row(x)
@@ -111,7 +111,7 @@ class Model:
         @return the y-location that the piece would end up at, or -1 if the column is full
         """
         for y in range(self.size_y):
-            if self.get_piece_at_opening(x, y) == Piece.none:
+            if self.get_piece_at_opening(x, y) == Piece.NONE:
                 return y
         return -1
 

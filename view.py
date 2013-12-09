@@ -33,7 +33,7 @@ class View:
     def __init__(self):
         self._model = model.Model((self._BOARD_SIZE_X, self._BOARD_SIZE_Y))
 
-        self._current_player_piece = model.Piece.player1
+        self._current_player_piece = model.Piece.PLAYER1
         self._drop_x = int(self._model.size_x / 2)
 
         pygame.init()
@@ -89,19 +89,19 @@ class View:
         self._end_turn()
 
     def _end_turn(self):
-        if self._current_player_piece == model.Piece.player1:
-            self._current_player_piece = model.Piece.player2
-        elif self._current_player_piece == model.Piece.player2:
-            self._current_player_piece = model.Piece.player1
+        if self._current_player_piece == model.Piece.PLAYER1:
+            self._current_player_piece = model.Piece.PLAYER2
+        elif self._current_player_piece == model.Piece.PLAYER2:
+            self._current_player_piece = model.Piece.PLAYER1
         else:
             raise RuntimeError('Invalid current player piece')
 
     def _check_for_win(self):
         winning_player = None
         game_state = self._model.get_state()
-        if game_state == model.GameState.player1_won:
+        if game_state == model.GameState.PLAYER1_WON:
             winning_player = 1
-        elif game_state == model.GameState.player2_won:
+        elif game_state == model.GameState.PLAYER2_WON:
             winning_player = 2
 
         if winning_player:
