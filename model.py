@@ -69,6 +69,32 @@ class Model:
         self._validate_opening(x, y)
         return self._openings[x][y]
 
+    def _get_piece_at_opening_or_none(self, x, y):
+        """
+        Same as get_piece_at_opening, but returns Piece.NONE if (x,y) is an invalid position.
+
+        >>> m = Model(4, (3, 3))
+        >>> m._get_piece_at_opening_or_none(0, 0)
+        0
+
+        >>> m._get_piece_at_opening_or_none(m.size_x - 1, m.size_y - 1)
+        0
+
+        >>> m._set_piece_at_opening(Piece.PLAYER1, 1, 0)
+        >>> m._get_piece_at_opening_or_none(1, 0)
+        1
+
+        >>> m._get_piece_at_opening_or_none(-1, -1)
+        0
+
+        >>> m._get_piece_at_opening_or_none(m.size_x - 1, m.size_y)
+        0
+        """
+        if self._is_valid_opening(x, y):
+            return self._openings[x][y]
+        else:
+            return Piece.NONE
+
     def is_column_full(self, x):
         """
         >>> m = Model(4, (2, 2))
