@@ -331,16 +331,14 @@ class Model:
         True
         """
         for slope_x, slope_y in ((1,0), (0,1), (1,1), (1,-1)):
-            for delta_start_x, delta_start_y in ((slope_x*i, slope_y*i) for i in range(self.consecutive_pieces_to_win)):
-                start_x = piece_x - delta_start_x
-                start_y = piece_y - delta_start_y
+            for start_x, start_y in ((piece_x - slope_x*i, piece_y - slope_y*i) for i in range(self.consecutive_pieces_to_win)):
                 won = True
                 for delta_x, delta_y in ((slope_x*i, slope_y*i) for i in range(self.consecutive_pieces_to_win)):
-                    # Don't need to check the piece that is being placed
-                    if delta_x == delta_start_x and delta_y == delta_start_y:
-                        continue
                     x = start_x + delta_x
                     y = start_y + delta_y
+                    # Don't need to check the piece that is being placed
+                    if (x, y) == (piece_x, piece_y):
+                        continue
                     current_piece = self._get_piece_at_opening_or_none(x, y)
                     if current_piece != piece:
                         won = False
