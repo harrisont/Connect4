@@ -26,7 +26,7 @@ class View:
     _BOARD_OPENING_MARGIN = 15
 
     _KEY_QUIT = pygame.K_ESCAPE
-    _KEY_DROP_PIECE = pygame.K_RETURN
+    _KEY_DROP_PIECE = pygame.K_DOWN
     _KEY_MOVE_LEFT = pygame.K_LEFT
     _KEY_MOVE_RIGHT = pygame.K_RIGHT
 
