@@ -2,6 +2,10 @@ import model
 import pygame
 import sys
 
+class ViewState:
+    PLAYING = 1
+    GAME_OVER = 2
+
 class View:
     _WINDOW_SIZE_X = 1024
     _WINDOW_SIZE_Y = 768
@@ -31,6 +35,7 @@ class View:
     _KEY_MOVE_RIGHT = pygame.K_RIGHT
 
     def __init__(self):
+        self._state = ViewState.PLAYING
         self._model = model.Model((self._BOARD_SIZE_X, self._BOARD_SIZE_Y))
 
         self._current_player_piece = model.Piece.PLAYER1
@@ -67,12 +72,13 @@ class View:
             elif event.type == pygame.KEYDOWN:
                 if event.key == self._KEY_QUIT:
                     pygame.event.post(pygame.event.Event(pygame.QUIT))
-                elif event.key == self._KEY_DROP_PIECE:
-                    self._attempt_to_drop_piece(self._current_player_piece, self._drop_x)
-                elif event.key == self._KEY_MOVE_LEFT:
-                    self._move(-1)
-                elif event.key == self._KEY_MOVE_RIGHT:
-                    self._move(1)
+                elif self._state == ViewState.PLAYING:
+                    if event.key == self._KEY_DROP_PIECE:
+                        self._attempt_to_drop_piece(self._current_player_piece, self._drop_x)
+                    elif event.key == self._KEY_MOVE_LEFT:
+                        self._move(-1)
+                    elif event.key == self._KEY_MOVE_RIGHT:
+                        self._move(1)
 
     def _quit(self):
         pygame.quit()
@@ -105,6 +111,7 @@ class View:
             winning_player = 2
 
         if winning_player:
+            self._state = ViewState.GAME_OVER
             winning_player_name = 'Player {}'.format(winning_player)
             self._draw_player_won_message(winning_player_name)
 
@@ -118,7 +125,9 @@ class View:
         self._screen.fill(self._BACKGROUND_COLOR)
 
         self._draw_board()
-        self._draw_drop_location()
+
+        if self._state == ViewState.PLAYING:
+            self._draw_drop_location()
 
         self._check_for_win()
 
