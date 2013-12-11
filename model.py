@@ -3,11 +3,6 @@ class Piece:
     PLAYER1 = 1
     PLAYER2 = 2
 
-class GameState:
-    PLAYING = 0
-    PLAYER1_WON = 1
-    PLAYER2_WON = 2
-
 class Model:
     def __init__(self, consecutive_pieces_to_win, size):
         """
@@ -15,8 +10,12 @@ class Model:
         """
         self.consecutive_pieces_to_win = consecutive_pieces_to_win
         self.size_x, self.size_y = size
+        self._reset_game()
+
+    def _reset_game(self):
+        self.winning_player = None
+        self.winning_piece_positions = None
         self._initialize_board()
-        self._game_state = GameState.PLAYING
 
     def _initialize_board(self):
         self._openings = [[Piece.NONE for y in range(self.size_y)] for x in range(self.size_x)]
@@ -161,12 +160,14 @@ class Model:
             raise ValueError('Invalid piece')
 
         y = self.get_drop_row(x)
-        if y >= 0:
-            self._set_piece_at_opening(piece, x, y)
-            if self._check_for_win(piece, x, y):
-                self._on_player_won(piece)
-        else:
+        if y < 0:
             raise RuntimeError('Cannot drop piece at column {} because it is full.'.format(x))
+
+        self._set_piece_at_opening(piece, x, y)
+
+        winning_piece_positions = self._check_for_win(piece, x, y)
+        if winning_piece_positions:
+            self._on_player_won(piece, winning_piece_positions)
 
     def get_drop_row(self, x):
         """
@@ -196,7 +197,8 @@ class Model:
         Checks for a win caused by a piece being placed at (piece_x, piece_y).
         @param piece (Piece) The piece being placed.
         @param piece_x,piece_y (Numbers) The position of the piece.
-        @return True if the player of the piece wins.
+        @return [(winning_piece_1_x, winning_piece_1_y), (winning_piece_2_x, winning_piece_2_y), ...]
+            if the player of the piece wins.  False otherwise.
 
         Horizontal checks:
         -----------------------------------------------------------------------
@@ -219,14 +221,14 @@ class Model:
         ... 0, 0, 0, 0,
         ... 0, 1, 1, 0])
         >>> m._check_for_win(Piece.PLAYER1, 0, 0)
-        True
+        [(0, 0), (1, 0), (2, 0)]
 
         >>> m = Model._create_from_picture(3, (4, 3), [
         ... 0, 0, 0, 0,
         ... 0, 0, 0, 0,
         ... 0, 1, 1, 0])
         >>> m._check_for_win(Piece.PLAYER1, 3, 0)
-        True
+        [(1, 0), (2, 0), (3, 0)]
 
         >>> m = Model._create_from_picture(3, (4, 3), [
         ... 0, 0, 0, 0,
@@ -254,14 +256,14 @@ class Model:
         ... 0, 0, 0, 0,
         ... 1, 0, 1, 0])
         >>> m._check_for_win(Piece.PLAYER1, 1, 0)
-        True
+        [(0, 0), (1, 0), (2, 0)]
 
         >>> m = Model._create_from_picture(3, (4, 3), [
         ... 0, 0, 0, 0,
         ... 0, 0, 0, 0,
         ... 1, 1, 0, 0])
         >>> m._check_for_win(Piece.PLAYER1, 2, 0)
-        True
+        [(0, 0), (1, 0), (2, 0)]
 
         Vertical checks:
         -----------------------------------------------------------------------
@@ -284,14 +286,14 @@ class Model:
         ... 1, 0, 0, 0,
         ... 1, 0, 0, 0])
         >>> m._check_for_win(Piece.PLAYER1, 0, 2)
-        True
+        [(0, 0), (0, 1), (0, 2)]
 
         >>> m = Model._create_from_picture(3, (4, 3), [
         ... 0, 0, 0, 0,
         ... 0, 0, 0, 2,
         ... 0, 0, 0, 2])
         >>> m._check_for_win(Piece.PLAYER2, 3, 2)
-        True
+        [(3, 0), (3, 1), (3, 2)]
 
         Diagonal checks:
         -----------------------------------------------------------------------
@@ -307,14 +309,14 @@ class Model:
         ... 0, 1, 2, 0,
         ... 1, 2, 2, 1])
         >>> m._check_for_win(Piece.PLAYER1, 2, 2)
-        True
+        [(0, 0), (1, 1), (2, 2)]
 
         >>> m = Model._create_from_picture(3, (4, 3), [
         ... 0, 0, 1, 0,
         ... 0, 1, 2, 0,
         ... 0, 2, 2, 1])
         >>> m._check_for_win(Piece.PLAYER1, 0, 0)
-        True
+        [(0, 0), (1, 1), (2, 2)]
 
         >>> m = Model._create_from_picture(3, (4, 3), [
         ... 0, 1, 0, 0,
@@ -328,34 +330,33 @@ class Model:
         ... 0, 2, 0, 0,
         ... 0, 1, 2, 1])
         >>> m._check_for_win(Piece.PLAYER1, 2, 1)
-        True
+        [(1, 2), (2, 1), (3, 0)]
         """
         for slope_x, slope_y in ((1,0), (0,1), (1,1), (1,-1)):
             for start_x, start_y in ((piece_x - slope_x*i, piece_y - slope_y*i) for i in range(self.consecutive_pieces_to_win)):
-                won = True
+                winning_piece_positions = []
                 for delta_x, delta_y in ((slope_x*i, slope_y*i) for i in range(self.consecutive_pieces_to_win)):
                     x = start_x + delta_x
                     y = start_y + delta_y
+                    winning_piece_positions.append((x, y))
                     # Don't need to check the piece that is being placed
                     if (x, y) == (piece_x, piece_y):
                         continue
                     current_piece = self._get_piece_at_opening_or_none(x, y)
                     if current_piece != piece:
-                        won = False
+                        winning_piece_positions = None
                         break
-                if won:
-                    return True
+                if winning_piece_positions:
+                    return winning_piece_positions
 
         return False
 
-    def _on_player_won(self, piece):
-        if piece == Piece.PLAYER1:
-            self._game_state = GameState.PLAYER1_WON
-        else:
-            self._game_state = GameState.PLAYER2_WON
-
-    def get_state(self):
-        return self._game_state
+    def _on_player_won(self, piece, winning_piece_positions):
+        """
+        @param winning_piece_positions [(winning_piece_1_x, winning_piece_1_y), (winning_piece_2_x, winning_piece_2_y), ...]
+        """
+        self.winning_player = piece
+        self.winning_piece_positions =  winning_piece_positions
 
     def __str__(self):
         """

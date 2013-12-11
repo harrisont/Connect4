@@ -26,6 +26,7 @@ class View:
         _BACKGROUND_COLOR,
         pygame.Color(164, 64, 64),
         pygame.Color(69, 69, 69)]
+    _WINNING_PIECES_LINE_COLOR = pygame.Color(30, 200, 30)
     _BOARD_MARGIN = 50
     _BOARD_OPENING_RADIUS = 40
     _BOARD_OPENING_MARGIN = 15
@@ -104,17 +105,14 @@ class View:
             raise RuntimeError('Invalid current player piece')
 
     def _check_for_win(self):
-        winning_player = None
-        game_state = self._model.get_state()
-        if game_state == model.GameState.PLAYER1_WON:
-            winning_player = 1
-        elif game_state == model.GameState.PLAYER2_WON:
-            winning_player = 2
-
+        winning_player = self._model.winning_player
         if winning_player:
             self._state = ViewState.GAME_OVER
+
             winning_player_name = 'Player {}'.format(winning_player)
             self._draw_player_won_message(winning_player_name)
+
+            self._draw_winning_pieces(self._model.winning_piece_positions)
 
     def _move(self, dx):
         self._drop_x = (self._drop_x + dx) % self._model.size_x
@@ -189,6 +187,16 @@ class View:
         message_rect = message_surface.get_rect()
         message_rect.topleft = (5, 5)
         self._screen.blit(message_surface, message_rect)
+
+    def _draw_winning_pieces(self, winning_piece_positions):
+        """
+        @param winning_piece_positions [(winning_piece_1_x, winning_piece_1_y), (winning_piece_2_x, winning_piece_2_y), ...]
+        """
+        color = self._WINNING_PIECES_LINE_COLOR
+        line_start = self._get_opening_center(*winning_piece_positions[0])
+        line_end = self._get_opening_center(*winning_piece_positions[-1])
+        line_width = self._BOARD_OPENING_RADIUS // 4
+        pygame.draw.line(self._screen, color, line_start, line_end, line_width)
 
 def main():
     view = View()
