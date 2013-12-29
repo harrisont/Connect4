@@ -198,10 +198,6 @@ class View:
         line_width = self._BOARD_OPENING_RADIUS // 4
         pygame.draw.line(self._screen, color, line_start, line_end, line_width)
 
-def main():
-    view = View()
-    view.run()
-
 def run_tests():
     """
     @return (failure_count, test_count)
@@ -211,6 +207,4 @@ def run_tests():
     return test.run_doctests(sys.modules[__name__], module_dependencies=[model])
 
 if __name__ == '__main__':
-    failure_count, test_count = run_tests()
-    if failure_count == 0:
-        main()
+    run_tests()
