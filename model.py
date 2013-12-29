@@ -10,6 +10,7 @@ class Model:
         """
         self.consecutive_pieces_to_win = consecutive_pieces_to_win
         self.size_x, self.size_y = size
+        self.current_player_piece = Piece.PLAYER1
         self._reset_game()
 
     def _reset_game(self):
@@ -191,6 +192,17 @@ class Model:
     def _validate_opening(self, x, y):
         if not self._is_valid_opening(x, y):
             raise ValueError('Invalid position ({},{})'.format(x, y))
+
+    def end_turn(self):
+        """
+        End the current player's turn and move on to the next player.
+        """
+        if self.current_player_piece == Piece.PLAYER1:
+            self.current_player_piece = Piece.PLAYER2
+        elif self.current_player_piece == Piece.PLAYER2:
+            self.current_player_piece = Piece.PLAYER1
+        else:
+            raise RuntimeError('Invalid current player piece')
 
     def _check_for_win(self, piece, piece_x, piece_y):
         """

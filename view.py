@@ -1,6 +1,5 @@
 import model
 import pygame
-import sys
 
 class ViewState:
     PLAYING = 1
@@ -28,107 +27,18 @@ class View:
     _BOARD_OPENING_RADIUS = 40
     _BOARD_OPENING_MARGIN = 15
 
-    _KEY_QUIT = pygame.K_ESCAPE
-    _KEY_DROP_PIECE = pygame.K_DOWN
-    _KEY_MOVE_LEFT = pygame.K_LEFT
-    _KEY_MOVE_RIGHT = pygame.K_RIGHT
-
     def __init__(self, view_model):
         self._state = ViewState.PLAYING
         self._model = view_model
-
-        self._current_player_piece = model.Piece.PLAYER1
-        self._drop_x = int(self._model.size_x / 2)
 
         pygame.init()
         pygame.display.set_caption('Connect Four')
         self._fps_clock = pygame.time.Clock()
         self._font = pygame.font.Font(None, self._FONT_SIZE)
 
-    def run(self):
-        self.print_controls()
-
         self._screen = pygame.display.set_mode((self._WINDOW_SIZE_X, self._WINDOW_SIZE_Y), pygame.DOUBLEBUF)
 
-        while True:
-            self._handle_events()
-            self._tick()
-            self._draw()
-
-            # Wait long enough to run at 30 FPS.
-            self._fps_clock.tick(30)
-
-    def print_controls(self):
-        print('Controls:')
-        print('\t{}: Quit'.format(pygame.key.name(self._KEY_QUIT)))
-        print('\t{}: Drop Piece'.format(pygame.key.name(self._KEY_DROP_PIECE)))
-        print('\t{}/{}: Move'.format(pygame.key.name(self._KEY_MOVE_LEFT), pygame.key.name(self._KEY_MOVE_LEFT)))
-
-    def _handle_events(self):
-        for event in pygame.event.get():
-            self._handle_event(event)
-
-    def _handle_event(self, event):
-        """
-        >>> class MockModel:
-        ...     def __init__(self):
-        ...         self.size_x = 1
-
-        >>> class MockEvent:
-        ...     def __init__(self, type):
-        ...         self.type = type
-        ...         self.key = None
-
-        >>> model = MockModel()
-        >>> event_handler = View(model)
-        >>> event = MockEvent(pygame.KEYDOWN)
-
-        >>> event.key = event_handler._KEY_DROP_PIECE
-        >>> event_handler._handle_event(event)
-
-        >>> event.key = event_handler._KEY_MOVE_LEFT
-        >>> event_handler._handle_event(event)
-
-        >>> event.key = event_handler._KEY_MOVE_RIGHT
-        >>> event_handler._handle_event(event)
-        """
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self._quit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == self._KEY_QUIT:
-                    pygame.event.post(pygame.event.Event(pygame.QUIT))
-                elif self._state == ViewState.PLAYING:
-                    if event.key == self._KEY_DROP_PIECE:
-                        self._attempt_to_drop_piece(self._current_player_piece, self._drop_x)
-                    elif event.key == self._KEY_MOVE_LEFT:
-                        self._move(-1)
-                    elif event.key == self._KEY_MOVE_RIGHT:
-                        self._move(1)
-
-    def _quit(self):
-        pygame.quit()
-        sys.exit()
-
-    def _attempt_to_drop_piece(self, piece, x):
-        """
-        @param piece (model.Piece)
-        @param x (Number) the column to drop the piece into
-        """
-        if self._model.is_column_full(x):
-            return
-        self._model.drop_piece(piece, x)
-        self._end_turn()
-
-    def _end_turn(self):
-        if self._current_player_piece == model.Piece.PLAYER1:
-            self._current_player_piece = model.Piece.PLAYER2
-        elif self._current_player_piece == model.Piece.PLAYER2:
-            self._current_player_piece = model.Piece.PLAYER1
-        else:
-            raise RuntimeError('Invalid current player piece')
-
-    def _check_for_win(self):
+    def _draw_won_message(self):
         winning_player = self._model.winning_player
         if winning_player:
             self._state = ViewState.GAME_OVER
@@ -138,21 +48,15 @@ class View:
 
             self._draw_winning_pieces(self._model.winning_piece_positions)
 
-    def _move(self, dx):
-        self._drop_x = (self._drop_x + dx) % self._model.size_x
-
-    def _tick(self):
-        pass
-
-    def _draw(self):
+    def draw(self, drop_x):
         self._screen.fill(self._BACKGROUND_COLOR)
 
         self._draw_board()
 
         if self._state == ViewState.PLAYING:
-            self._draw_drop_location()
+            self._draw_drop_location(drop_x)
 
-        self._check_for_win()
+        self._draw_won_message()
 
         pygame.display.flip()
 
@@ -173,12 +77,12 @@ class View:
         opening_center = self._get_opening_center(x, y)
         pygame.draw.circle(self._screen, color, opening_center, self._BOARD_OPENING_RADIUS)
 
-    def _draw_drop_location(self):
-        self._draw_piece(self._current_player_piece, self._drop_x, self._model.size_y)
+    def _draw_drop_location(self, drop_x):
+        self._draw_piece(self._model.current_player_piece, drop_x, self._model.size_y)
 
-        drop_y = self._model.get_drop_row(self._drop_x)
+        drop_y = self._model.get_drop_row(drop_x)
         if drop_y >= 0:
-            self._draw_piece(self._current_player_piece, self._drop_x, drop_y, potential_piece=True)
+            self._draw_piece(self._model.current_player_piece, drop_x, drop_y, potential_piece=True)
 
     def _get_board_position(self):
         return (self._BOARD_MARGIN, self._BOARD_MARGIN)
@@ -221,6 +125,10 @@ class View:
         line_end = self._get_opening_center(*winning_piece_positions[-1])
         line_width = self._BOARD_OPENING_RADIUS // 4
         pygame.draw.line(self._screen, color, line_start, line_end, line_width)
+
+    def tick(self):
+        # Wait long enough to run at 30 FPS.
+        self._fps_clock.tick(30)
 
 def run_tests():
     """
