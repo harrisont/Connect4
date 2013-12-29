@@ -66,6 +66,33 @@ class View:
 
     def _handle_events(self):
         for event in pygame.event.get():
+            self._handle_event(event)
+
+    def _handle_event(self, event):
+        """
+        >>> class MockModel:
+        ...     def __init__(self):
+        ...         self.size_x = 1
+
+        >>> class MockEvent:
+        ...     def __init__(self, type):
+        ...         self.type = type
+        ...         self.key = None
+
+        >>> model = MockModel()
+        >>> event_handler = View(model)
+        >>> event = MockEvent(pygame.KEYDOWN)
+
+        >>> event.key = event_handler._KEY_DROP_PIECE
+        >>> event_handler._handle_event(event)
+
+        >>> event.key = event_handler._KEY_MOVE_LEFT
+        >>> event_handler._handle_event(event)
+
+        >>> event.key = event_handler._KEY_MOVE_RIGHT
+        >>> event_handler._handle_event(event)
+        """
+        for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self._quit()
             elif event.type == pygame.KEYDOWN:
