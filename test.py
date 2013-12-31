@@ -15,9 +15,11 @@ def run_doctests(module, module_dependencies=None):
     """
     @param module the module to test
     @param module_dependencies iteratable(module-with-run_tests-method)
-    @return (failure_count, test_count)
+    @return ((failure_count, test_count), tested_modules)
     """
     import doctest
+
+    tested_modules = {module}
 
     # Test self
     test_results = doctest.testmod(module)
@@ -25,6 +27,10 @@ def run_doctests(module, module_dependencies=None):
     # Test other modules
     if module_dependencies:
         for module in module_dependencies:
-            test_results = tuple(x + y for x,y in zip(test_results, module.run_tests()))
+            if module in tested_modules:
+                continue
+            current_test_results, current_tested_modules = module.run_tests()
+            test_results = tuple(x + y for x,y in zip(test_results, current_test_results))
+            tested_modules.update(current_tested_modules)
 
-    return test_results
+    return test_results, tested_modules
