@@ -19,6 +19,14 @@ class Controller:
         self._view = None
         self._reset_game()
 
+        self._key_map = dict(
+            quit=self._KEY_QUIT,
+            drop_piece=self._KEY_DROP_PIECE,
+            move_left=self._KEY_MOVE_LEFT,
+            move_right=self._KEY_MOVE_RIGHT,
+            new_game=self._KEY_NEW_GAME,
+            )
+
         pygame.init()
 
     def _reset_game(self):
@@ -29,7 +37,7 @@ class Controller:
 
     def run(self):
         self._print_controls()
-        self._view = view.View(self._model)
+        self._view = view.View(self._model, self._key_map)
 
         while True:
             self._handle_events()
@@ -61,13 +69,13 @@ class Controller:
         >>> event_handler = Controller()
         >>> event = MockEvent(pygame.KEYDOWN)
 
-        >>> event.key = event_handler._KEY_DROP_PIECE
+        >>> event.key = event_handler._key_map['drop_piece']
         >>> event_handler._handle_event(event)
 
-        >>> event.key = event_handler._KEY_MOVE_LEFT
+        >>> event.key = event_handler._key_map['move_left']
         >>> event_handler._handle_event(event)
 
-        >>> event.key = event_handler._KEY_MOVE_RIGHT
+        >>> event.key = event_handler._key_map['move_right']
         >>> event_handler._handle_event(event)
         """
         if event.type == pygame.QUIT:
@@ -76,14 +84,14 @@ class Controller:
             if event.key == self._KEY_QUIT:
                 pygame.event.post(pygame.event.Event(pygame.QUIT))
             elif self._is_game_playing():
-                if event.key == self._KEY_DROP_PIECE:
+                if event.key == self._key_map['drop_piece']:
                     self._attempt_to_drop_piece_for_current_player_at_current_location()
-                elif event.key == self._KEY_MOVE_LEFT:
+                elif event.key == self._key_map['move_left']:
                     self._move(-1)
-                elif event.key == self._KEY_MOVE_RIGHT:
+                elif event.key == self._key_map['move_right']:
                     self._move(1)
             else:
-                if event.key == self._KEY_NEW_GAME:
+                if event.key == self._key_map['new_game']:
                     self._reset_game()
 
     def _attempt_to_drop_piece_for_current_player_at_current_location(self):

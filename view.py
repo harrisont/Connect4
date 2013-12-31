@@ -27,9 +27,10 @@ class View:
     _BOARD_OPENING_RADIUS = 40
     _BOARD_OPENING_MARGIN = 15
 
-    def __init__(self, view_model):
+    def __init__(self, view_model, key_map):
         self.reset()
         self._model = view_model
+        self._key_map = key_map
 
         pygame.init()
         pygame.display.set_caption('Connect Four')
@@ -115,7 +116,9 @@ class View:
 
     def _get_player_won_message(self):
         winning_player = self._model.winning_player
-        return 'Player {} Won! Press "RETURN" to play again.'.format(winning_player)
+        return 'Player {} Won! Press "{}" to play again.'.format(
+            winning_player,
+            pygame.key.name(self._key_map['new_game']))
 
     def _draw_winning_pieces(self, winning_piece_positions):
         """
