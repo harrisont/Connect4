@@ -26,8 +26,8 @@ class Controller:
         while True:
             self._handle_events()
             self._tick()
-            self._draw()
             self._tick_view()
+            self._draw()
 
     def _quit(self):
         pygame.quit()

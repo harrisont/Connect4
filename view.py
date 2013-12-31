@@ -38,15 +38,13 @@ class View:
 
         self._screen = pygame.display.set_mode((self._WINDOW_SIZE_X, self._WINDOW_SIZE_Y), pygame.DOUBLEBUF)
 
-    def _draw_won_message(self):
+    def _get_player_won_message(self):
         winning_player = self._model.winning_player
-        if winning_player:
-            self._state = ViewState.GAME_OVER
+        return 'Player {} Won!'.format(winning_player)
 
-            winning_player_name = 'Player {}'.format(winning_player)
-            self._draw_player_won_message(winning_player_name)
-
-            self._draw_winning_pieces(self._model.winning_piece_positions)
+    def _draw_won_message(self):
+        self._draw_player_won_message()
+        self._draw_winning_pieces(self._model.winning_piece_positions)
 
     def draw(self, drop_x):
         self._screen.fill(self._BACKGROUND_COLOR)
@@ -55,8 +53,8 @@ class View:
 
         if self._state == ViewState.PLAYING:
             self._draw_drop_location(drop_x)
-
-        self._draw_won_message()
+        elif self._state == ViewState.GAME_OVER:
+            self._draw_won_message()
 
         pygame.display.flip()
 
@@ -108,8 +106,8 @@ class View:
         else:
             return self._PIECE_COLORS[piece]
 
-    def _draw_player_won_message(self, winning_player_name):
-        message = '{} Won!'.format(winning_player_name)
+    def _draw_player_won_message(self):
+        message = self._get_player_won_message()
         message_color = pygame.Color(255, 255, 255)
         message_surface = self._font.render(message, True, message_color)
         message_rect = message_surface.get_rect()
@@ -129,6 +127,10 @@ class View:
     def tick(self):
         # Wait long enough to run at 30 FPS.
         self._fps_clock.tick(30)
+
+        winning_player = self._model.winning_player
+        if winning_player:
+            self._state = ViewState.GAME_OVER
 
 def run_tests():
     """
