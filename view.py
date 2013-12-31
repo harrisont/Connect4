@@ -28,7 +28,7 @@ class View:
     _BOARD_OPENING_MARGIN = 15
 
     def __init__(self, view_model):
-        self._state = ViewState.PLAYING
+        self.reset()
         self._model = view_model
 
         pygame.init()
@@ -37,6 +37,9 @@ class View:
         self._font = pygame.font.Font(None, self._FONT_SIZE)
 
         self._screen = pygame.display.set_mode((self._WINDOW_SIZE_X, self._WINDOW_SIZE_Y), pygame.DOUBLEBUF)
+
+    def reset(self):
+        self._state = ViewState.PLAYING
 
     def draw(self, drop_x):
         self._screen.fill(self._BACKGROUND_COLOR)
@@ -112,7 +115,7 @@ class View:
 
     def _get_player_won_message(self):
         winning_player = self._model.winning_player
-        return 'Player {} Won!'.format(winning_player)
+        return 'Player {} Won! Press "RETURN" to play again.'.format(winning_player)
 
     def _draw_winning_pieces(self, winning_piece_positions):
         """

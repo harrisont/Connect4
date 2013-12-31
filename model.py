@@ -10,10 +10,10 @@ class Model:
         """
         self.consecutive_pieces_to_win = consecutive_pieces_to_win
         self.size_x, self.size_y = size
-        self.current_player_piece = Piece.PLAYER1
-        self._reset_game()
+        self.reset_game()
 
-    def _reset_game(self):
+    def reset_game(self):
+        self.current_player_piece = Piece.PLAYER1
         self.winning_player = None
         self.winning_piece_positions = None
         self._initialize_board()

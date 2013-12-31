@@ -8,6 +8,7 @@ class Controller:
     _KEY_DROP_PIECE = pygame.K_DOWN
     _KEY_MOVE_LEFT = pygame.K_LEFT
     _KEY_MOVE_RIGHT = pygame.K_RIGHT
+    _KEY_NEW_GAME = pygame.K_RETURN
 
     _CONSECUTIVE_PIECES_TO_WIN = 4
     _BOARD_SIZE_X = 7
@@ -15,9 +16,16 @@ class Controller:
 
     def __init__(self):
         self._model = model.Model(self._CONSECUTIVE_PIECES_TO_WIN, (self._BOARD_SIZE_X, self._BOARD_SIZE_Y))
-        self._drop_x = int(self._model.size_x / 2)
+        self._view = None
+        self._reset_game()
 
         pygame.init()
+
+    def _reset_game(self):
+        self._drop_x = int(self._model.size_x / 2)
+        self._model.reset_game()
+        if self._view:
+            self._view.reset()
 
     def run(self):
         self._print_controls()
@@ -74,6 +82,9 @@ class Controller:
                     self._move(-1)
                 elif event.key == self._KEY_MOVE_RIGHT:
                     self._move(1)
+            else:
+                if event.key == self._KEY_NEW_GAME:
+                    self._reset_game()
 
     def _attempt_to_drop_piece_for_current_player_at_current_location(self):
         self._attempt_to_drop_piece(self._get_current_player_piece(), self._drop_x)
