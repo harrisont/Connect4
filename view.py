@@ -1,5 +1,6 @@
 import model
 import pygame
+import os
 
 class ViewState:
     PLAYING = 1
@@ -37,6 +38,7 @@ class View:
         self._fps_clock = pygame.time.Clock()
         self._font = pygame.font.Font(None, self._FONT_SIZE)
 
+        pygame.display.set_icon(pygame.image.load(os.path.join('data', 'icon.png')))
         self._screen = pygame.display.set_mode((self._WINDOW_SIZE_X, self._WINDOW_SIZE_Y), pygame.DOUBLEBUF)
 
     def reset(self):
