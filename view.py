@@ -38,14 +38,6 @@ class View:
 
         self._screen = pygame.display.set_mode((self._WINDOW_SIZE_X, self._WINDOW_SIZE_Y), pygame.DOUBLEBUF)
 
-    def _get_player_won_message(self):
-        winning_player = self._model.winning_player
-        return 'Player {} Won!'.format(winning_player)
-
-    def _draw_won_message(self):
-        self._draw_player_won_message()
-        self._draw_winning_pieces(self._model.winning_piece_positions)
-
     def draw(self, drop_x):
         self._screen.fill(self._BACKGROUND_COLOR)
 
@@ -106,6 +98,10 @@ class View:
         else:
             return self._PIECE_COLORS[piece]
 
+    def _draw_won_message(self):
+        self._draw_player_won_message()
+        self._draw_winning_pieces(self._model.winning_piece_positions)
+
     def _draw_player_won_message(self):
         message = self._get_player_won_message()
         message_color = pygame.Color(255, 255, 255)
@@ -113,6 +109,10 @@ class View:
         message_rect = message_surface.get_rect()
         message_rect.topleft = (5, 5)
         self._screen.blit(message_surface, message_rect)
+
+    def _get_player_won_message(self):
+        winning_player = self._model.winning_player
+        return 'Player {} Won!'.format(winning_player)
 
     def _draw_winning_pieces(self, winning_piece_positions):
         """
