@@ -66,8 +66,16 @@ class View:
         self._state = ViewState.PLAYING
         self._drop_animations = []
         self._last_tracked_num_drops = 0
+        self._last_drop_x = -1
+        self._dirty = True
 
     def draw(self, drop_x):
+        # Optimization to skip the draw step if nothing changed.
+        if (len(self._drop_animations) == 0
+                and drop_x == self._last_drop_x
+                and self._dirty == False):
+            return
+
         self._screen.fill(self._BACKGROUND_COLOR)
 
         self._draw_board()
@@ -78,6 +86,8 @@ class View:
             self._draw_won_message()
 
         pygame.display.flip()
+        self._last_drop_x = drop_x
+        self._dirty = False
 
     def _draw_board(self):
         board_rect = self._get_board_rect()
