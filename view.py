@@ -6,9 +6,28 @@ class ViewState:
     PLAYING = 1
     GAME_OVER = 2
 
+class DropAnimation:
+    def __init__(self, piece, board_x, board_y_initial, board_y_final):
+        self.piece = piece
+        self.board_x = board_x
+        self.board_y = board_y_initial
+        self.board_y_final = board_y_final
+
+    def drop(self, delta_y):
+        """
+        @return True if the animation is done, False otherwise.
+        """
+        self.board_y -= delta_y
+        if self.board_y <= self.board_y_final:
+            self.board_y = self.board_y_final
+            return True
+        else:
+            return False
+
 class View:
     _WINDOW_SIZE_X = 1024
     _WINDOW_SIZE_Y = 768
+    _DESIRED_FPS = 60
 
     _FONT_SIZE = 36
 
@@ -28,6 +47,8 @@ class View:
     _BOARD_OPENING_RADIUS = 40
     _BOARD_OPENING_MARGIN = 15
 
+    _PIECE_DROP_RATE = 10  # board-positions per second
+
     def __init__(self, view_model, key_map):
         self.reset()
         self._model = view_model
@@ -43,6 +64,8 @@ class View:
 
     def reset(self):
         self._state = ViewState.PLAYING
+        self._drop_animations = []
+        self._last_tracked_num_drops = 0
 
     def draw(self, drop_x):
         self._screen.fill(self._BACKGROUND_COLOR)
@@ -62,8 +85,26 @@ class View:
 
         for x in range(self._model.size_x):
             for y in range(self._model.size_y):
-                piece = self._model.get_piece_at_opening(x, y)
+                if self._has_dropping_piece_with_final_position(x, y):
+                    piece = model.Piece.NONE
+                else:
+                    piece = self._model.get_piece_at_opening(x, y)
                 self._draw_piece(piece, x, y)
+
+        self._draw_dropping_pieces()
+
+    def _has_dropping_piece_with_final_position(self, x, y):
+        """
+        @return True if there is a dropping piece whose final position is (x, y), False otherwise.
+        """
+        for drop_animation in self._drop_animations:
+            if x == drop_animation.board_x and y == drop_animation.board_y_final:
+                return True
+        return False
+
+    def _draw_dropping_pieces(self):
+        for drop_animation in self._drop_animations:
+            self._draw_piece(drop_animation.piece, drop_animation.board_x, drop_animation.board_y)
 
     def _draw_piece(self, piece, x, y, potential_piece=False):
         """
@@ -95,8 +136,8 @@ class View:
     def _get_opening_center(self, x, y):
         board_x, board_y = self._get_board_position()
         flipped_y = self._model.size_y - y - 1
-        return (board_x + (x+1) * self._BOARD_OPENING_MARGIN + (2*x + 1) * self._BOARD_OPENING_RADIUS,
-                board_y + (flipped_y+1) * self._BOARD_OPENING_MARGIN + (2*flipped_y + 1) * self._BOARD_OPENING_RADIUS)
+        return (int(board_x + (x+1) * self._BOARD_OPENING_MARGIN + (2*x + 1) * self._BOARD_OPENING_RADIUS),
+                int(board_y + (flipped_y+1) * self._BOARD_OPENING_MARGIN + (2*flipped_y + 1) * self._BOARD_OPENING_RADIUS))
 
     def _get_piece_color(self, piece, potential_piece):
         if potential_piece:
@@ -133,12 +174,37 @@ class View:
         pygame.draw.line(self._screen, color, line_start, line_end, line_width)
 
     def tick(self):
-        # Wait long enough to run at 30 FPS.
-        self._fps_clock.tick(30)
+        # Wait long enough to run at a fixed FPS.
+        self._fps_clock.tick(self._DESIRED_FPS)
 
         winning_player = self._model.winning_player
         if winning_player:
             self._state = ViewState.GAME_OVER
+
+        self._track_newly_dropped_pieces()
+        self._drop_dropping_pieces()
+
+    def _track_newly_dropped_pieces(self):
+        drop_history = self._get_drop_history()
+        num_drops = len(drop_history)
+        for drop_history_index in range(self._last_tracked_num_drops, num_drops):
+            piece, x, y_final = drop_history[drop_history_index]
+            y_initial = self._model.size_y - 1
+            self._drop_animations.append(DropAnimation(piece, x, y_initial, y_final))
+        self._last_tracked_num_drops = num_drops
+
+    def _get_drop_history(self):
+        return self._model.drop_history
+
+    def _drop_dropping_pieces(self):
+        delta_y = self._PIECE_DROP_RATE / self._DESIRED_FPS
+        finished_drop_animation_indices = []
+        for drop_animation_index, drop_animation in enumerate(self._drop_animations):
+            drop_finished = drop_animation.drop(delta_y)
+            if drop_finished:
+                finished_drop_animation_indices.append(drop_animation_index)
+        for drop_animation_index in reversed(finished_drop_animation_indices):
+            self._drop_animations.pop(drop_animation_index)
 
 def run_tests():
     """

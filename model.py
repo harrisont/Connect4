@@ -16,6 +16,7 @@ class Model:
         self.current_player_piece = Piece.PLAYER1
         self.winning_player = None
         self.winning_piece_positions = None
+        self.drop_history = []
         self._initialize_board()
 
     def _initialize_board(self):
@@ -165,6 +166,7 @@ class Model:
             raise RuntimeError('Cannot drop piece at column {} because it is full.'.format(x))
 
         self._set_piece_at_opening(piece, x, y)
+        self.drop_history.append((piece, x, y))
 
         winning_piece_positions = self._check_for_win(piece, x, y)
         if winning_piece_positions:
