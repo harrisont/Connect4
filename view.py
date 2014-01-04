@@ -209,12 +209,18 @@ class View:
     def _drop_dropping_pieces(self):
         delta_y = self._PIECE_DROP_RATE / self._DESIRED_FPS
         finished_drop_animation_indices = []
+
         for drop_animation_index, drop_animation in enumerate(self._drop_animations):
             drop_finished = drop_animation.drop(delta_y)
             if drop_finished:
                 finished_drop_animation_indices.append(drop_animation_index)
+
         for drop_animation_index in reversed(finished_drop_animation_indices):
             self._drop_animations.pop(drop_animation_index)
+
+            # This is necessary to draw the last frame of the animation.
+            # Otherwise the frame will be skipped (by optimization) when this is the last animation.
+            self._dirty = True
 
 def run_tests():
     """
