@@ -25,8 +25,8 @@ class DropAnimation:
             return False
 
 class View:
-    _WINDOW_SIZE_X = 1024
-    _WINDOW_SIZE_Y = 768
+    _WINDOW_SIZE_X = 800
+    _WINDOW_SIZE_Y = 700
     _DESIRED_FPS = 60
 
     _FONT_SIZE = 36
