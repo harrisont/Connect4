@@ -53,6 +53,7 @@ class View:
         self.reset()
         self._model = view_model
         self._key_map = key_map
+        self._drop_animations = []
 
         pygame.init()
         pygame.display.set_caption('Connect Four')
@@ -66,7 +67,6 @@ class View:
 
     def reset(self):
         self._state = ViewState.PLAYING
-        self._drop_animations = []
         self._last_tracked_num_drops = 0
         self._last_drop_x = -1
         self._dirty = True
@@ -259,6 +259,22 @@ class View:
             # This is necessary to draw the last frame of the animation.
             # Otherwise the frame will be skipped (by optimization) when this is the last animation.
             self._dirty = True
+
+    def drop_all_pieces_off_of_board_from_current_location(self):
+        drop_history = self._get_drop_history()
+        num_drops = len(drop_history)
+        y_final = -1
+        existing_drop_animations = self._drop_animations.copy()
+        for piece, x, y_initial in drop_history:
+            has_existing_drop_animation = False
+            for exiting_drop_animation in existing_drop_animations:
+                if exiting_drop_animation.board_y_final == y_initial:
+                    exiting_drop_animation.board_y_final = y_final
+                    has_existing_drop_animation = True
+                    break
+            if has_existing_drop_animation:
+                continue
+            self._drop_animations.append(DropAnimation(piece, x, y_initial, y_final))
 
 def run_tests():
     """

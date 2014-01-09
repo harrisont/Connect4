@@ -92,7 +92,7 @@ class Controller:
                     self._move(1)
             else:
                 if event.key == self._key_map['new_game']:
-                    self._reset_game()
+                    self._new_game()
 
     def _attempt_to_drop_piece_for_current_player_at_current_location(self):
         self._attempt_to_drop_piece(self._get_current_player_piece(), self._drop_x)
@@ -109,6 +109,10 @@ class Controller:
 
     def _move(self, dx):
         self._drop_x = (self._drop_x + dx) % self._model.size_x
+
+    def _new_game(self):
+        self._view.drop_all_pieces_off_of_board_from_current_location()
+        self._reset_game()
 
     def _tick(self):
         pass
