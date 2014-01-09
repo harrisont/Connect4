@@ -189,10 +189,11 @@ class View:
 
     def _draw_won_message(self):
         self._draw_player_won_message()
-        self._draw_winning_pieces(self._model.winning_piece_positions)
+        if self._model.winning_player != model.Piece.NONE:
+            self._draw_winning_pieces(self._model.winning_piece_positions)
 
     def _draw_player_won_message(self):
-        message = self._get_player_won_message()
+        message = '{} {}'.format(self._get_player_won_message(), self._get_new_game_message())
         message_color = pygame.Color(255, 255, 255)
         message_surface = self._font.render(message, True, message_color)
         message_rect = message_surface.get_rect()
@@ -201,9 +202,13 @@ class View:
 
     def _get_player_won_message(self):
         winning_player = self._model.winning_player
-        return 'Player {} Won! Press "{}" to play again.'.format(
-            winning_player,
-            pygame.key.name(self._key_map['new_game']))
+        if winning_player == model.Piece.NONE:
+            return 'Tie Game!'
+        else:
+            return 'Player {} Won!'.format(winning_player)
+
+    def _get_new_game_message(self):
+        return 'Press "{}" to play again.'.format(pygame.key.name(self._key_map['new_game']))
 
     def _draw_winning_pieces(self, winning_piece_positions):
         """
@@ -221,7 +226,7 @@ class View:
         self._fps_clock.tick(self._DESIRED_FPS)
 
         winning_player = self._model.winning_player
-        if winning_player:
+        if winning_player is not None:
             self._state = ViewState.GAME_OVER
 
         self._track_newly_dropped_pieces()

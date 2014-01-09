@@ -172,6 +172,9 @@ class Model:
         if winning_piece_positions:
             self._on_player_won(piece, winning_piece_positions)
 
+        if self._is_tie():
+            self._on_tie()
+
     def get_drop_row(self, x):
         """
         @return the y-location that the piece would end up at, or -1 if the column is full
@@ -365,12 +368,47 @@ class Model:
 
         return False
 
+    def _is_tie(self):
+        """
+        @return True if the current board state is a tie.  False otherwise.
+
+        >>> m = Model._create_from_picture(3, (3, 3), [
+        ... 0, 0, 0,
+        ... 0, 0, 0,
+        ... 0, 0, 0])
+        >>> m._is_tie()
+        False
+
+        >>> m = Model._create_from_picture(3, (3, 3), [
+        ... 1, 1, 0,
+        ... 2, 2, 1,
+        ... 1, 1, 2])
+        >>> m._is_tie()
+        False
+
+        >>> m = Model._create_from_picture(3, (3, 3), [
+        ... 1, 1, 2,
+        ... 2, 2, 1,
+        ... 1, 1, 2])
+        >>> m._is_tie()
+        True
+        """
+        for y in range(self.size_y):
+            for x in range(self.size_x):
+                piece = self.get_piece_at_opening(x, y)
+                if piece == Piece.NONE:
+                    return False
+        return True
+
     def _on_player_won(self, piece, winning_piece_positions):
         """
         @param winning_piece_positions [(winning_piece_1_x, winning_piece_1_y), (winning_piece_2_x, winning_piece_2_y), ...]
         """
         self.winning_player = piece
         self.winning_piece_positions =  winning_piece_positions
+
+    def _on_tie(self):
+        self.winning_player = Piece.NONE
 
     def __str__(self):
         """
