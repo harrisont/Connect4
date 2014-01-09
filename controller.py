@@ -49,11 +49,14 @@ class Controller:
         pygame.quit()
         sys.exit()
 
+    def _get_key(self, action):
+        return self._key_map[action]
+
     def _print_controls(self):
         print('Controls:')
-        print('\t{}: Quit'.format(pygame.key.name(self._KEY_QUIT)))
-        print('\t{}: Drop Piece'.format(pygame.key.name(self._KEY_DROP_PIECE)))
-        print('\t{}/{}: Move'.format(pygame.key.name(self._KEY_MOVE_LEFT), pygame.key.name(self._KEY_MOVE_LEFT)))
+        print('\t{}: Quit'.format(pygame.key.name(self._get_key('quit'))))
+        print('\t{}: Drop Piece'.format(pygame.key.name(self._get_key('drop_piece'))))
+        print('\t{}/{}: Move'.format(pygame.key.name(self._get_key('move_left')), pygame.key.name(self._get_key('move_right'))))
 
     def _handle_events(self):
         for event in pygame.event.get():
@@ -69,29 +72,29 @@ class Controller:
         >>> event_handler = Controller()
         >>> event = MockEvent(pygame.KEYDOWN)
 
-        >>> event.key = event_handler._key_map['drop_piece']
+        >>> event.key = event_handler._get_key('drop_piece')
         >>> event_handler._handle_event(event)
 
-        >>> event.key = event_handler._key_map['move_left']
+        >>> event.key = event_handler._get_key('move_left')
         >>> event_handler._handle_event(event)
 
-        >>> event.key = event_handler._key_map['move_right']
+        >>> event.key = event_handler._get_key('move_right')
         >>> event_handler._handle_event(event)
         """
         if event.type == pygame.QUIT:
             self._quit()
         elif event.type == pygame.KEYDOWN:
-            if event.key == self._KEY_QUIT:
+            if event.key == self._get_key('quit'):
                 pygame.event.post(pygame.event.Event(pygame.QUIT))
             elif self._is_game_playing():
-                if event.key == self._key_map['drop_piece']:
+                if event.key == self._get_key('drop_piece'):
                     self._attempt_to_drop_piece_for_current_player_at_current_location()
-                elif event.key == self._key_map['move_left']:
+                elif event.key == self._get_key('move_left'):
                     self._move(-1)
-                elif event.key == self._key_map['move_right']:
+                elif event.key == self._get_key('move_right'):
                     self._move(1)
             else:
-                if event.key == self._key_map['new_game']:
+                if event.key == self._get_key('new_game'):
                     self._new_game()
 
     def _attempt_to_drop_piece_for_current_player_at_current_location(self):
