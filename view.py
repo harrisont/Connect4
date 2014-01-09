@@ -62,6 +62,8 @@ class View:
         pygame.display.set_icon(pygame.image.load(os.path.join('data', 'icon.png')))
         self._screen = pygame.display.set_mode((self._WINDOW_SIZE_X, self._WINDOW_SIZE_Y), pygame.DOUBLEBUF)
 
+        self._board_surface = self._create_board_surface()
+
     def reset(self):
         self._state = ViewState.PLAYING
         self._drop_animations = []
@@ -78,6 +80,8 @@ class View:
 
         self._screen.fill(self._BACKGROUND_COLOR)
 
+        self._draw_pieces_at_rest()
+        self._draw_dropping_pieces()
         self._draw_board()
 
         if self._state == ViewState.PLAYING:
@@ -89,19 +93,37 @@ class View:
         self._last_drop_x = drop_x
         self._dirty = False
 
-    def _draw_board(self):
-        board_rect = self._get_board_rect()
-        pygame.draw.rect(self._screen, self._BOARD_COLOR, board_rect, 0)
-
+    def _draw_pieces_at_rest(self):
         for x in range(self._model.size_x):
             for y in range(self._model.size_y):
                 if self._has_dropping_piece_with_final_position(x, y):
-                    piece = model.Piece.NONE
-                else:
-                    piece = self._model.get_piece_at_opening(x, y)
+                    continue
+                piece = self._model.get_piece_at_opening(x, y)
+                if piece == model.Piece.NONE:
+                    continue
                 self._draw_piece(piece, x, y)
 
-        self._draw_dropping_pieces()
+    def _create_board_surface(self):
+        """
+        Create a board surface with transparent openings.
+        @return the created board surface
+        """
+        x, y, width, height = self._get_board_rect()
+        openings_surface = pygame.Surface((width, height), pygame.SRCALPHA)
+        openings_surface.fill(pygame.Color(0, 0, 0, 0))
+        offset = (0, 0)
+        for x in range(self._model.size_x):
+            for y in range(self._model.size_y):
+                self._draw_piece_onto_surface(openings_surface, pygame.Color(255, 255, 255), x, y, offset)
+
+        board_surface = pygame.Surface((width, height), pygame.SRCALPHA)
+        board_surface.fill(self._BOARD_COLOR)
+        board_surface.blit(openings_surface, (0,0), area=None, special_flags=pygame.BLEND_RGBA_SUB)
+        return board_surface
+
+    def _draw_board(self):
+        x, y = self._get_board_position()
+        self._screen.blit(self._board_surface, (x, y))
 
     def _has_dropping_piece_with_final_position(self, x, y):
         """
@@ -121,8 +143,15 @@ class View:
         @param potential_piece (Boolean) if True, draws the piece as a potential piece
         """
         color = self._get_piece_color(piece, potential_piece)
-        opening_center = self._get_opening_center(x, y)
-        pygame.draw.circle(self._screen, color, opening_center, self._BOARD_OPENING_RADIUS)
+        board_position = self._get_board_position()
+        self._draw_piece_onto_surface(self._screen, color, x, y, board_position)
+
+    def _draw_piece_onto_surface(self, surface, color, x, y, offset):
+        """
+        @param offset (x,y)
+        """
+        opening_center = self._get_opening_center(x, y, offset)
+        pygame.draw.circle(surface, color, opening_center, self._BOARD_OPENING_RADIUS)
 
     def _draw_drop_location(self, drop_x):
         self._draw_piece(self._model.current_player_piece, drop_x, self._model.size_y)
@@ -143,11 +172,14 @@ class View:
                 self._BOARD_OPENING_MARGIN + self._model.size_x * size_per_opening,
                 self._BOARD_OPENING_MARGIN + self._model.size_y * size_per_opening)
 
-    def _get_opening_center(self, x, y):
-        board_x, board_y = self._get_board_position()
+    def _get_opening_center(self, x, y, offset):
+        """
+        @param offset (x,y)
+        """
+        offset_x, offset_y = offset
         flipped_y = self._model.size_y - y - 1
-        return (int(board_x + (x+1) * self._BOARD_OPENING_MARGIN + (2*x + 1) * self._BOARD_OPENING_RADIUS),
-                int(board_y + (flipped_y+1) * self._BOARD_OPENING_MARGIN + (2*flipped_y + 1) * self._BOARD_OPENING_RADIUS))
+        return (int(offset_x + (x+1) * self._BOARD_OPENING_MARGIN + (2*x + 1) * self._BOARD_OPENING_RADIUS),
+                int(offset_y + (flipped_y+1) * self._BOARD_OPENING_MARGIN + (2*flipped_y + 1) * self._BOARD_OPENING_RADIUS))
 
     def _get_piece_color(self, piece, potential_piece):
         if potential_piece:
@@ -178,8 +210,9 @@ class View:
         @param winning_piece_positions [(winning_piece_1_x, winning_piece_1_y), (winning_piece_2_x, winning_piece_2_y), ...]
         """
         color = self._WINNING_PIECES_LINE_COLOR
-        line_start = self._get_opening_center(*winning_piece_positions[0])
-        line_end = self._get_opening_center(*winning_piece_positions[-1])
+        board_position = self._get_board_position()
+        line_start = self._get_opening_center(*winning_piece_positions[0], offset=board_position)
+        line_end = self._get_opening_center(*winning_piece_positions[-1], offset=board_position)
         line_width = self._BOARD_OPENING_RADIUS // 4
         pygame.draw.line(self._screen, color, line_start, line_end, line_width)
 
