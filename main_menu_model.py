@@ -1,13 +1,21 @@
+class Entry:
+    def __init__(self, text, on_select_func):
+        self.text = text
+        self._on_select_func = on_select_func
+
+    def select(self):
+        self._on_select_func()
+
 class MainMenuModel:
-    def __init__(self, actions):
-        self.actions = actions
+    def __init__(self, entries):
+        self.entries = entries
         self.current_index = 0
 
     def change_current_index(self, delta_index):
-        self.current_index = (self.current_index + delta_index) % len(self.actions)
+        self.current_index = (self.current_index + delta_index) % len(self.entries)
 
-    def get_current_action(self):
-        return self.actions[self.current_index]
+    def get_current_entry(self):
+        return self.entries[self.current_index]
 
 def run_tests():
     """

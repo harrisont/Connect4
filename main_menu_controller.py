@@ -4,7 +4,6 @@ import main_menu_model
 import main_menu_view
 import pygame
 
-
 class MainMenuController:
     _KEY_SELECT_CURRENT_MENU_ITEM = key.ModifiedKey(pygame.K_RETURN)
     _KEY_UP = key.ModifiedKey(pygame.K_UP)
@@ -13,7 +12,10 @@ class MainMenuController:
     def __init__(self, game_key_binding_manager):
         self._game_key_binding_manager = game_key_binding_manager
         self._is_enabled = False
-        self._model = main_menu_model.MainMenuModel(actions=['New Game', 'Controls', 'Exit'])
+        self._model = main_menu_model.MainMenuModel([
+            main_menu_model.Entry('New Game', lambda: print('new game')),
+            main_menu_model.Entry('Controls', lambda: print('TODO(#6): show controls menu')),
+            main_menu_model.Entry('Exit', lambda: print('exit'))])
         self._view = main_menu_view.MainMenuView(self._model)
         self._is_dirty = False
 
@@ -59,7 +61,8 @@ class MainMenuController:
         return True
 
     def _select_current_menu_item(self):
-        pass
+        entry = self._model.get_current_entry()
+        entry.select()
 
     def _get_game_action(self, modified_key):
         """
