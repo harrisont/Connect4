@@ -1,3 +1,4 @@
+import key_binding_manager
 import model
 import pygame
 import os
@@ -49,10 +50,10 @@ class View:
 
     _PIECE_DROP_RATE = 10  # board-positions per second
 
-    def __init__(self, view_model, key_map):
+    def __init__(self, view_model, key_binding_manager):
         self.reset()
         self._model = view_model
-        self._key_map = key_map
+        self._key_binding_manager = key_binding_manager
         self._drop_animations = []
 
         pygame.init()
@@ -208,7 +209,8 @@ class View:
             return 'Player {} Won!'.format(winning_player)
 
     def _get_new_game_message(self):
-        return 'Press "{}" to play again.'.format(pygame.key.name(self._key_map['new_game']))
+        new_game_key = self._key_binding_manager.get_key(key_binding_manager.Action.NEW_GAME)
+        return 'Press "{}" to play again.'.format(pygame.key.name(new_game_key))
 
     def _draw_winning_pieces(self, winning_piece_positions):
         """
@@ -282,7 +284,7 @@ def run_tests():
     """
     import sys
     import test
-    return test.run_doctests(sys.modules[__name__], module_dependencies=[model])
+    return test.run_doctests(sys.modules[__name__], module_dependencies=[key_binding_manager, model])
 
 if __name__ == '__main__':
     run_tests()

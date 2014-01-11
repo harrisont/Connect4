@@ -1,15 +1,10 @@
+import key_binding_manager
 import model
 import view
 import pygame
 import sys
 
 class Controller:
-    _KEY_QUIT = pygame.K_ESCAPE
-    _KEY_DROP_PIECE = pygame.K_DOWN
-    _KEY_MOVE_LEFT = pygame.K_LEFT
-    _KEY_MOVE_RIGHT = pygame.K_RIGHT
-    _KEY_NEW_GAME = pygame.K_RETURN
-
     _CONSECUTIVE_PIECES_TO_WIN = 4
     _BOARD_SIZE_X = 7
     _BOARD_SIZE_Y = 6
@@ -18,14 +13,7 @@ class Controller:
         self._model = model.Model(self._CONSECUTIVE_PIECES_TO_WIN, (self._BOARD_SIZE_X, self._BOARD_SIZE_Y))
         self._view = None
         self._reset_game()
-
-        self._key_map = dict(
-            quit=self._KEY_QUIT,
-            drop_piece=self._KEY_DROP_PIECE,
-            move_left=self._KEY_MOVE_LEFT,
-            move_right=self._KEY_MOVE_RIGHT,
-            new_game=self._KEY_NEW_GAME,
-            )
+        self._key_binding_manager = key_binding_manager.KeyBindingManager()
 
         pygame.init()
 
@@ -36,8 +24,8 @@ class Controller:
             self._view.reset()
 
     def run(self):
-        self._print_controls()
-        self._view = view.View(self._model, self._key_map)
+        self._key_binding_manager.print_controls()
+        self._view = view.View(self._model, self._key_binding_manager)
 
         while True:
             self._handle_events()
@@ -50,13 +38,7 @@ class Controller:
         sys.exit()
 
     def _get_key(self, action):
-        return self._key_map[action]
-
-    def _print_controls(self):
-        print('Controls:')
-        print('\t{}: Quit'.format(pygame.key.name(self._get_key('quit'))))
-        print('\t{}: Drop Piece'.format(pygame.key.name(self._get_key('drop_piece'))))
-        print('\t{}/{}: Move'.format(pygame.key.name(self._get_key('move_left')), pygame.key.name(self._get_key('move_right'))))
+        return self._key_binding_manager.get_key(action)
 
     def _handle_events(self):
         for event in pygame.event.get():
@@ -72,32 +54,32 @@ class Controller:
         >>> event_handler = Controller()
         >>> event = MockEvent(pygame.KEYDOWN)
 
-        >>> event.key = event_handler._get_key('drop_piece')
+        >>> event.key = event_handler._get_key(key_binding_manager.Action.DROP_PIECE)
         >>> event_handler._handle_event(event)
 
-        >>> event.key = event_handler._get_key('move_left')
+        >>> event.key = event_handler._get_key(key_binding_manager.Action.MOVE_LEFT)
         >>> event_handler._handle_event(event)
 
-        >>> event.key = event_handler._get_key('move_right')
+        >>> event.key = event_handler._get_key(key_binding_manager.Action.MOVE_RIGHT)
         >>> event_handler._handle_event(event)
 
-        >>> event.key = event_handler._get_key('new_game')
+        >>> event.key = event_handler._get_key(key_binding_manager.Action.NEW_GAME)
         >>> event_handler._handle_event(event)
         """
         if event.type == pygame.QUIT:
             self._quit()
         elif event.type == pygame.KEYDOWN:
-            if event.key == self._get_key('quit'):
+            if event.key == self._get_key(key_binding_manager.Action.QUIT):
                 pygame.event.post(pygame.event.Event(pygame.QUIT))
             elif self._is_game_playing():
-                if event.key == self._get_key('drop_piece'):
+                if event.key == self._get_key(key_binding_manager.Action.DROP_PIECE):
                     self._attempt_to_drop_piece_for_current_player_at_current_location()
-                elif event.key == self._get_key('move_left'):
+                elif event.key == self._get_key(key_binding_manager.Action.MOVE_LEFT):
                     self._move(-1)
-                elif event.key == self._get_key('move_right'):
+                elif event.key == self._get_key(key_binding_manager.Action.MOVE_RIGHT):
                     self._move(1)
             else:
-                if event.key == self._get_key('new_game'):
+                if event.key == self._get_key(key_binding_manager.Action.NEW_GAME):
                     self._new_game()
 
     def _attempt_to_drop_piece_for_current_player_at_current_location(self):
@@ -141,7 +123,7 @@ def run_tests():
     """
     import sys
     import test
-    return test.run_doctests(sys.modules[__name__], module_dependencies=[view])
+    return test.run_doctests(sys.modules[__name__], module_dependencies=[key_binding_manager, view])
 
 if __name__ == '__main__':
     run_tests()
