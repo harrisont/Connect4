@@ -55,6 +55,7 @@ class View:
         self._model = view_model
         self._key_binding_manager = key_binding_manager
         self._drop_animations = []
+        self._additional_layers = []
 
         pygame.init()
         pygame.display.set_caption('Connect Four')
@@ -78,9 +79,7 @@ class View:
 
     def draw(self, drop_x):
         # Optimization to skip the draw step if nothing changed.
-        if (len(self._drop_animations) == 0
-                and drop_x == self._last_drop_x
-                and self._dirty == False):
+        if not self._is_dirty(drop_x):
             return
 
         self._screen.fill(self._BACKGROUND_COLOR)
@@ -94,9 +93,18 @@ class View:
         elif self._state == ViewState.GAME_OVER:
             self._draw_won_message()
 
+        for layer in self._additional_layers:
+            layer.draw(self._screen)
+
         pygame.display.flip()
         self._last_drop_x = drop_x
         self._dirty = False
+
+    def _is_dirty(self, drop_x):
+        return (len(self._drop_animations) > 0
+            or drop_x != self._last_drop_x
+            or self._dirty
+            or any([layer.is_dirty() for layer in self._additional_layers]))
 
     def _draw_pieces_at_rest(self):
         for x in range(self._model.size_x):
@@ -281,6 +289,12 @@ class View:
             if has_existing_drop_animation:
                 continue
             self._drop_animations.append(DropAnimation(piece, x, y_initial, y_final))
+
+    def add_layer(self, drawable):
+        """
+        @param drawable is an object that contains a draw(Surface) method
+        """
+        return self._additional_layers.append(drawable)
 
 def run_tests():
     """

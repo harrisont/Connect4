@@ -1,4 +1,5 @@
 import key_binding_manager
+import main_menu_controller
 import model
 import view
 import pygame
@@ -10,6 +11,7 @@ class Controller:
     >>> controller._attempt_to_drop_piece_for_current_player_at_current_location()
     >>> controller._move(-1)
     >>> controller._move(1)
+    >>> controller._toggle_main_menu()
     """
 
     _CONSECUTIVE_PIECES_TO_WIN = 4
@@ -19,8 +21,9 @@ class Controller:
     def __init__(self):
         self._model = model.Model(self._CONSECUTIVE_PIECES_TO_WIN, (self._BOARD_SIZE_X, self._BOARD_SIZE_Y))
         self._view = None
-        self._reset_game()
         self._key_binding_manager = key_binding_manager.KeyBindingManager()
+        self._main_menu_controller = main_menu_controller.MainMenuController(self._key_binding_manager)
+        self._reset_game()
 
         pygame.init()
 
@@ -37,6 +40,7 @@ class Controller:
     def run(self):
         self._key_binding_manager.print_controls()
         self._view = view.View(self._model, self._key_binding_manager)
+        self._view.add_layer(self._main_menu_controller)
 
         while True:
             self._handle_events()
@@ -47,9 +51,6 @@ class Controller:
     def _quit(self):
         pygame.quit()
         sys.exit()
-
-    def _get_key(self, action):
-        return self._key_binding_manager.get_key(action)
 
     def _handle_events(self):
         for event in pygame.event.get():
@@ -65,9 +66,12 @@ class Controller:
         """
         @param key a pygame.K_* value
         """
-        action = self._key_binding_manager.get_action(key)
-        if action is not None:
-            self._handle_action(action)
+        if self._main_menu_controller.is_enabled():
+            self._main_menu_controller.handle_event_key_down(key)
+        else:
+            action = self._key_binding_manager.get_action(key)
+            if action is not None:
+                self._handle_action(action)
 
     def _handle_action(self, action):
         assert(action is not None)
@@ -80,6 +84,8 @@ class Controller:
                 self._move(-1)
             elif action == key_binding_manager.Action.MOVE_RIGHT:
                 self._move(1)
+            elif action == key_binding_manager.Action.TOGGLE_MAIN_MENU:
+                self._toggle_main_menu()
         else:
             if action == key_binding_manager.Action.NEW_GAME:
                 self._reset_game()
@@ -99,6 +105,9 @@ class Controller:
 
     def _move(self, dx):
         self._drop_x = (self._drop_x + dx) % self._model.size_x
+
+    def _toggle_main_menu(self):
+        self._main_menu_controller.toggle()
 
     def _tick(self):
         pass
@@ -121,7 +130,11 @@ def run_tests():
     """
     import sys
     import test
-    return test.run_doctests(sys.modules[__name__], module_dependencies=[key_binding_manager, model, view])
+    return test.run_doctests(sys.modules[__name__],
+                             module_dependencies=[key_binding_manager,
+                                                  main_menu_controller,
+                                                  model,
+                                                  view])
 
 if __name__ == '__main__':
     run_tests()

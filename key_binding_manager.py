@@ -6,6 +6,7 @@ class Action:
     MOVE_LEFT = 2
     MOVE_RIGHT = 3
     NEW_GAME = 4
+    TOGGLE_MAIN_MENU = 5
 
 class KeyBindingManager:
     _KEY_QUIT = pygame.K_ESCAPE
@@ -13,6 +14,7 @@ class KeyBindingManager:
     _KEY_MOVE_LEFT = pygame.K_LEFT
     _KEY_MOVE_RIGHT = pygame.K_RIGHT
     _KEY_NEW_GAME = pygame.K_RETURN
+    _KEY_TOGGLE_MAIN_MENU = pygame.K_SPACE
 
     def __init__(self):
         self._action_to_key_map = {
@@ -21,6 +23,7 @@ class KeyBindingManager:
             Action.MOVE_LEFT: self._KEY_MOVE_LEFT,
             Action.MOVE_RIGHT: self._KEY_MOVE_RIGHT,
             Action.NEW_GAME: self._KEY_NEW_GAME,
+            Action.TOGGLE_MAIN_MENU: self._KEY_TOGGLE_MAIN_MENU,
             }
         self._on_action_to_key_map_changed()
 
@@ -56,6 +59,7 @@ class KeyBindingManager:
 
     def print_controls(self):
         print('Controls:')
+        print('\t{}: Toggle Menu'.format(pygame.key.name(self.get_key(Action.TOGGLE_MAIN_MENU))))
         print('\t{}: Quit'.format(pygame.key.name(self.get_key(Action.QUIT))))
         print('\t{}: Drop Piece'.format(pygame.key.name(self.get_key(Action.DROP_PIECE))))
         print('\t{}/{}: Move'.format(pygame.key.name(self.get_key(Action.MOVE_LEFT)), pygame.key.name(self.get_key(Action.MOVE_RIGHT))))
