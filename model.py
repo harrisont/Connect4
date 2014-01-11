@@ -22,6 +22,17 @@ class Model:
     def _initialize_board(self):
         self._openings = [[Piece.NONE for y in range(self.size_y)] for x in range(self.size_x)]
 
+    def initialize_from_picture(self, pieces):
+        """
+        @param pieces (Piece[])
+        """
+        index = 0
+        for y in range(self.size_y - 1, -1, -1):
+            for x in range(self.size_x):
+                piece = pieces[index]
+                self._set_piece_at_opening(piece, x, y)
+                index += 1
+
     @staticmethod
     def _create_from_picture(consecutive_pieces_to_win, size, pieces):
         """
@@ -40,12 +51,7 @@ class Model:
         1
         """
         model = Model(consecutive_pieces_to_win, size)
-        index = 0
-        for y in range(model.size_y - 1, -1, -1):
-            for x in range(model.size_x):
-                piece = pieces[index]
-                model._set_piece_at_opening(piece, x, y)
-                index += 1
+        model.initialize_from_picture(pieces)
         return model
 
     def get_piece_at_opening(self, x, y):
