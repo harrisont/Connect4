@@ -9,13 +9,13 @@ class MainMenuController:
     _KEY_UP = key.ModifiedKey(pygame.K_UP)
     _KEY_DOWN = key.ModifiedKey(pygame.K_DOWN)
 
-    def __init__(self, game_key_binding_manager):
+    def __init__(self, game_key_binding_manager, new_game_func, quit_func):
         self._game_key_binding_manager = game_key_binding_manager
-        self._is_enabled = False
+        self._is_enabled = True
         self._model = main_menu_model.MainMenuModel([
-            main_menu_model.Entry('New Game', lambda: print('new game')),
+            main_menu_model.Entry('New Game', new_game_func),
             main_menu_model.Entry('Controls', lambda: print('TODO(#6): show controls menu')),
-            main_menu_model.Entry('Exit', lambda: print('exit'))])
+            main_menu_model.Entry('Quit', quit_func)])
         self._view = main_menu_view.MainMenuView(self._model)
         self._is_dirty = False
 
