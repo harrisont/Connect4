@@ -1,19 +1,9 @@
 import key
 import key_binding_manager
+import main_menu_model
 import main_menu_view
 import pygame
 
-class MainMenuModel:
-    def __init__(self, actions):
-        self._actions = actions
-        self._current_index = 0
-
-    def change_current_index(self, delta_index):
-        self._current_index = (self._current_index + delta_index) % len(self._actions)
-        print(self._current_index, self.get_current_action())
-
-    def get_current_action(self):
-        return self._actions[self._current_index]
 
 class MainMenuController:
     _KEY_SELECT_CURRENT_MENU_ITEM = key.ModifiedKey(pygame.K_RETURN)
@@ -23,7 +13,7 @@ class MainMenuController:
     def __init__(self, game_key_binding_manager):
         self._game_key_binding_manager = game_key_binding_manager
         self._is_enabled = False
-        self._model = MainMenuModel(actions=['New Game', 'Controls', 'Exit'])
+        self._model = main_menu_model.MainMenuModel(actions=['New Game', 'Controls', 'Exit'])
         self._view = main_menu_view.MainMenuView()
         self._is_dirty = False
 
@@ -86,6 +76,7 @@ def run_tests():
     return test.run_doctests(sys.modules[__name__],
                              module_dependencies=[key,
                                                   key_binding_manager,
+                                                  main_menu_model,
                                                   main_menu_view])
 
 if __name__ == '__main__':
