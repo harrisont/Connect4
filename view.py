@@ -1,4 +1,3 @@
-import key_binding_manager
 import model
 import pygame
 import os
@@ -50,10 +49,9 @@ class View:
 
     _PIECE_DROP_RATE = 10  # board-positions per second
 
-    def __init__(self, view_model, key_binding_manager):
+    def __init__(self, view_model):
         self.reset()
         self._model = view_model
-        self._key_binding_manager = key_binding_manager
         self._drop_animations = []
         self._additional_layers = []
 
@@ -206,7 +204,7 @@ class View:
             self._draw_winning_pieces(self._model.winning_piece_positions)
 
     def _draw_player_won_message(self):
-        message = '{} {}'.format(self._get_player_won_message(), self._get_new_game_message())
+        message = self._get_player_won_message()
         message_color = pygame.Color(255, 255, 255)
         message_surface = self._font.render(message, True, message_color)
         message_rect = message_surface.get_rect()
@@ -219,10 +217,6 @@ class View:
             return 'Tie Game!'
         else:
             return 'Player {} Won!'.format(winning_player)
-
-    def _get_new_game_message(self):
-        new_game_key = self._key_binding_manager.get_key(key_binding_manager.Action.NEW_GAME)
-        return 'Press "{}" to play again.'.format(new_game_key)
 
     def _draw_winning_pieces(self, winning_piece_positions):
         """
@@ -302,7 +296,7 @@ def run_tests():
     """
     import sys
     import test
-    return test.run_doctests(sys.modules[__name__], module_dependencies=[key_binding_manager, model])
+    return test.run_doctests(sys.modules[__name__], module_dependencies=[model])
 
 if __name__ == '__main__':
     run_tests()

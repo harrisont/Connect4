@@ -46,7 +46,7 @@ class Controller:
 
     def run(self):
         self._key_binding_manager.print_controls()
-        self._view = view.View(self._model, self._key_binding_manager)
+        self._view = view.View(self._model)
         self._view.add_layer(self._main_menu_controller)
 
         while True:
@@ -95,12 +95,11 @@ class Controller:
                 self._move(1)
             elif action == key_binding_manager.Action.TOGGLE_MAIN_MENU:
                 self._toggle_main_menu()
-        else:
-            if action == key_binding_manager.Action.NEW_GAME:
-                self._reset_game()
 
     def _attempt_to_drop_piece_for_current_player_at_current_location(self):
         self._attempt_to_drop_piece(self._get_current_player_piece(), self._drop_x)
+        if not self._is_game_playing():
+            self._toggle_main_menu()
 
     def _attempt_to_drop_piece(self, piece, x):
         """
