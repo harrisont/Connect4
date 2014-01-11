@@ -3,6 +3,18 @@ import key_binding_manager
 import main_menu_view
 import pygame
 
+class MainMenuModel:
+    def __init__(self, actions):
+        self._actions = actions
+        self._current_index = 0
+
+    def change_current_index(self, delta_index):
+        self._current_index = (self._current_index + delta_index) % len(self._actions)
+        print(self._current_index, self.get_current_action())
+
+    def get_current_action(self):
+        return self._actions[self._current_index]
+
 class MainMenuController:
     _KEY_SELECT_CURRENT_MENU_ITEM = key.ModifiedKey(pygame.K_RETURN)
     _KEY_UP = key.ModifiedKey(pygame.K_UP)
@@ -11,11 +23,9 @@ class MainMenuController:
     def __init__(self, game_key_binding_manager):
         self._game_key_binding_manager = game_key_binding_manager
         self._is_enabled = False
+        self._model = MainMenuModel(actions=['New Game', 'Controls', 'Exit'])
         self._view = main_menu_view.MainMenuView()
         self._is_dirty = False
-
-        self._menu_actions = ['New Game', 'Controls', 'Exit']
-        self._current_menu_index = 0
 
     def is_enabled(self):
         return self._is_enabled
@@ -51,19 +61,15 @@ class MainMenuController:
             self._select_current_menu_item()
             self._is_dirty = True
         elif modified_key == self._KEY_UP:
-            self._change_current_menu_index(-1)
+            self._model.change_current_index(-1)
             self._is_dirty = True
         elif modified_key == self._KEY_DOWN:
-            self._change_current_menu_index(1)
+            self._model.change_current_index(1)
             self._is_dirty = True
         return True
 
     def _select_current_menu_item(self):
         pass
-
-    def _change_current_menu_index(self, delta_index):
-        max_index = len(self._menu_actions) - 1
-        self._current_menu_index = min(max(0, self._current_menu_index + delta_index), max_index)
 
     def _get_game_action(self, modified_key):
         """
