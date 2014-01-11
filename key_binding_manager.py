@@ -15,7 +15,7 @@ class KeyBindingManager:
     _KEY_MOVE_LEFT = key.ModifiedKey(pygame.K_LEFT)
     _KEY_MOVE_RIGHT = key.ModifiedKey(pygame.K_RIGHT)
     _KEY_NEW_GAME = key.ModifiedKey(pygame.K_RETURN)
-    _KEY_TOGGLE_MAIN_MENU = key.ModifiedKey(pygame.K_SPACE)
+    _KEY_TOGGLE_MAIN_MENU = key.ModifiedKey(pygame.K_ESCAPE)
 
     def __init__(self):
         self._action_to_key_map = {
