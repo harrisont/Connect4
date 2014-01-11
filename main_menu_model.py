@@ -1,14 +1,14 @@
 class MainMenuModel:
     def __init__(self, actions):
-        self._actions = actions
+        self.actions = actions
         self._current_index = 0
 
     def change_current_index(self, delta_index):
-        self._current_index = (self._current_index + delta_index) % len(self._actions)
+        self._current_index = (self._current_index + delta_index) % len(self.actions)
         print(self._current_index, self.get_current_action())
 
     def get_current_action(self):
-        return self._actions[self._current_index]
+        return self.actions[self._current_index]
 
 def run_tests():
     """

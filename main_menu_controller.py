@@ -14,7 +14,7 @@ class MainMenuController:
         self._game_key_binding_manager = game_key_binding_manager
         self._is_enabled = False
         self._model = main_menu_model.MainMenuModel(actions=['New Game', 'Controls', 'Exit'])
-        self._view = main_menu_view.MainMenuView()
+        self._view = main_menu_view.MainMenuView(self._model)
         self._is_dirty = False
 
     def is_enabled(self):
