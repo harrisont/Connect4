@@ -25,11 +25,16 @@ class KeyBindingManager:
 
     def get_key(self, action):
         """
+        @return the key that corresponds to the action, or None if there is none.
+
         >>> key_binding_manager = KeyBindingManager()
         >>> key_binding_manager.get_key(Action.DROP_PIECE) == KeyBindingManager._KEY_DROP_PIECE
         True
+
+        Returns None if the action has no corresponding key.
+        >>> key_binding_manager.get_key(12345)
         """
-        return self._action_to_key_map[action]
+        return self._action_to_key_map.get(action)
 
     def print_controls(self):
         print('Controls:')
