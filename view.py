@@ -222,7 +222,7 @@ class View:
 
     def _get_new_game_message(self):
         new_game_key = self._key_binding_manager.get_key(key_binding_manager.Action.NEW_GAME)
-        return 'Press "{}" to play again.'.format(pygame.key.name(new_game_key))
+        return 'Press "{}" to play again.'.format(new_game_key)
 
     def _draw_winning_pieces(self, winning_piece_positions):
         """
