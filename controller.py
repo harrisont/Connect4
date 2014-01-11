@@ -5,6 +5,13 @@ import pygame
 import sys
 
 class Controller:
+    """
+    >>> controller = Controller()
+    >>> controller._attempt_to_drop_piece_for_current_player_at_current_location()
+    >>> controller._move(-1)
+    >>> controller._move(1)
+    """
+
     _CONSECUTIVE_PIECES_TO_WIN = 4
     _BOARD_SIZE_X = 7
     _BOARD_SIZE_Y = 6
@@ -18,6 +25,10 @@ class Controller:
         pygame.init()
 
     def _reset_game(self):
+        # This needs to be done before the model is reset.
+        if self._view:
+            self._view.drop_all_pieces_off_of_board_from_current_location()
+
         self._drop_x = int(self._model.size_x / 2)
         self._model.reset_game()
         if self._view:
@@ -45,42 +56,33 @@ class Controller:
             self._handle_event(event)
 
     def _handle_event(self, event):
-        """
-        >>> class MockEvent:
-        ...     def __init__(self, type):
-        ...         self.type = type
-        ...         self.key = None
-
-        >>> event_handler = Controller()
-        >>> event = MockEvent(pygame.KEYDOWN)
-
-        >>> event.key = event_handler._get_key(key_binding_manager.Action.DROP_PIECE)
-        >>> event_handler._handle_event(event)
-
-        >>> event.key = event_handler._get_key(key_binding_manager.Action.MOVE_LEFT)
-        >>> event_handler._handle_event(event)
-
-        >>> event.key = event_handler._get_key(key_binding_manager.Action.MOVE_RIGHT)
-        >>> event_handler._handle_event(event)
-
-        >>> event.key = event_handler._get_key(key_binding_manager.Action.NEW_GAME)
-        >>> event_handler._handle_event(event)
-        """
         if event.type == pygame.QUIT:
             self._quit()
         elif event.type == pygame.KEYDOWN:
-            if event.key == self._get_key(key_binding_manager.Action.QUIT):
-                pygame.event.post(pygame.event.Event(pygame.QUIT))
-            elif self._is_game_playing():
-                if event.key == self._get_key(key_binding_manager.Action.DROP_PIECE):
-                    self._attempt_to_drop_piece_for_current_player_at_current_location()
-                elif event.key == self._get_key(key_binding_manager.Action.MOVE_LEFT):
-                    self._move(-1)
-                elif event.key == self._get_key(key_binding_manager.Action.MOVE_RIGHT):
-                    self._move(1)
-            else:
-                if event.key == self._get_key(key_binding_manager.Action.NEW_GAME):
-                    self._new_game()
+            self._handle_event_key_down(event.key)
+
+    def _handle_event_key_down(self, key):
+        """
+        @param key a pygame.K_* value
+        """
+        action = self._key_binding_manager.get_action(key)
+        if action is not None:
+            self._handle_action(action)
+
+    def _handle_action(self, action):
+        assert(action is not None)
+        if action == key_binding_manager.Action.QUIT:
+            pygame.event.post(pygame.event.Event(pygame.QUIT))
+        elif self._is_game_playing():
+            if action == key_binding_manager.Action.DROP_PIECE:
+                self._attempt_to_drop_piece_for_current_player_at_current_location()
+            elif action == key_binding_manager.Action.MOVE_LEFT:
+                self._move(-1)
+            elif action == key_binding_manager.Action.MOVE_RIGHT:
+                self._move(1)
+        else:
+            if action == key_binding_manager.Action.NEW_GAME:
+                self._reset_game()
 
     def _attempt_to_drop_piece_for_current_player_at_current_location(self):
         self._attempt_to_drop_piece(self._get_current_player_piece(), self._drop_x)
@@ -97,10 +99,6 @@ class Controller:
 
     def _move(self, dx):
         self._drop_x = (self._drop_x + dx) % self._model.size_x
-
-    def _new_game(self):
-        self._view.drop_all_pieces_off_of_board_from_current_location()
-        self._reset_game()
 
     def _tick(self):
         pass

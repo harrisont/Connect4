@@ -22,6 +22,10 @@ class KeyBindingManager:
             Action.MOVE_RIGHT: self._KEY_MOVE_RIGHT,
             Action.NEW_GAME: self._KEY_NEW_GAME,
             }
+        self._on_action_to_key_map_changed()
+
+    def _on_action_to_key_map_changed(self):
+        self._key_to_action_map = {value:key for key, value in self._action_to_key_map.items()}
 
     def get_key(self, action):
         """
@@ -35,6 +39,20 @@ class KeyBindingManager:
         >>> key_binding_manager.get_key(12345)
         """
         return self._action_to_key_map.get(action)
+
+    def get_action(self, key):
+        """
+        @param key a pygame.K_* value
+        @return the action that corresponds to the key, or None if there is none.
+
+        >>> key_binding_manager = KeyBindingManager()
+        >>> key_binding_manager.get_action(KeyBindingManager._KEY_DROP_PIECE) == Action.DROP_PIECE
+        True
+
+        Returns None if the key has no corresponding action.
+        >>> key_binding_manager.get_action(12345)
+        """
+        return self._key_to_action_map.get(key)
 
     def print_controls(self):
         print('Controls:')
