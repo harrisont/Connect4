@@ -67,6 +67,10 @@ class View:
         self._board_surface = self._create_board_surface()
 
     def reset(self):
+        """
+        Do not reset self._drop_animations because we want these to persist across games to support
+        animating the pieces from the previous game being dropped off of the board.
+        """
         self._state = ViewState.PLAYING
         self._last_tracked_num_drops = 0
         self._last_drop_x = -1
