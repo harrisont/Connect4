@@ -2,6 +2,7 @@ import key
 import key_binding_manager
 import main_menu_model
 import main_menu_view
+
 import pygame
 
 class MainMenuController:

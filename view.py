@@ -1,5 +1,7 @@
 import model
+
 import pygame
+
 import os
 
 class ViewState:

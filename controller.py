@@ -3,7 +3,9 @@ import key_binding_manager
 import main_menu_controller
 import model
 import view
+
 import pygame
+
 import sys
 
 class Controller:

@@ -1,4 +1,5 @@
 import main_menu_model
+
 import pygame
 
 class MainMenuView:
