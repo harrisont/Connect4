@@ -8,7 +8,7 @@ class MainMenuView:
     _ACTION_TEXT_PADDING = 5
     _FONT_SIZE = 36
     _FONT_COLOR = pygame.Color(255, 255, 255)
-    _FONT_SELECTED_COLOR = pygame.Color(0, 0, 0)
+    _FONT_HOVER_COLOR = pygame.Color(0, 0, 0)
 
     def __init__(self, model):
         self._model = model
@@ -37,7 +37,7 @@ class MainMenuView:
             position = self._get_action_text_position(index)
 
             if index == self._model.current_index:
-                color = self._FONT_SELECTED_COLOR
+                color = self._FONT_HOVER_COLOR
             else:
                 color = self._FONT_COLOR
 
