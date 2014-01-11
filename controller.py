@@ -69,11 +69,12 @@ class Controller:
         @param modified_key a key.ModifiedKey
         """
         if self._main_menu_controller.is_enabled():
-            self._main_menu_controller.handle_event_key_down(modified_key)
-        else:
-            action = self._key_binding_manager.get_action(modified_key)
-            if action is not None:
-                self._handle_action(action)
+            if self._main_menu_controller.handle_event_key_down(modified_key):
+                return
+
+        action = self._key_binding_manager.get_action(modified_key)
+        if action is not None:
+            self._handle_action(action)
 
     def _handle_action(self, action):
         assert(action is not None)

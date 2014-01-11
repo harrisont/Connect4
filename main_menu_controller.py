@@ -1,11 +1,12 @@
+import key
 import key_binding_manager
 import main_menu_view
 import pygame
 
 class MainMenuController:
-    _KEY_SELECT_CURRENT_MENU_ITEM = pygame.K_RETURN
-    _KEY_UP = pygame.K_UP
-    _KEY_DOWN = pygame.K_DOWN
+    _KEY_SELECT_CURRENT_MENU_ITEM = key.ModifiedKey(pygame.K_RETURN)
+    _KEY_UP = key.ModifiedKey(pygame.K_UP)
+    _KEY_DOWN = key.ModifiedKey(pygame.K_DOWN)
 
     def __init__(self, game_key_binding_manager):
         self._game_key_binding_manager = game_key_binding_manager
@@ -33,31 +34,29 @@ class MainMenuController:
     def handle_event_key_down(self, modified_key):
         """
         @param modified_key a key.ModifiedKey
+        @return True if the event is consumed by the handler and should not be further processed.
         """
-        self._is_dirty = self._handle_event_key_down_helper(modified_key)
-
-    def _handle_event_key_down_helper(self, modified_key):
-        """
-        @param modified_key a key.ModifiedKey
-        @return True if the key was handled, False otherwise.
-        """
+        self._is_dirty = False
         if not self.is_enabled():
             return False
 
-        if self._get_game_action(modified_key) == key_binding_manager.Action.TOGGLE_MAIN_MENU:
-            self._is_enabled = False
-            return True
-        elif key == self._KEY_SELECT_CURRENT_MENU_ITEM:
-            self._select_current_menu_item()
-            return True
-        elif key == self._KEY_UP:
-            self._change_current_menu_index(-1)
-            return True
-        elif key == self._KEY_DOWN:
-            self._change_current_menu_index(1)
-            return True
-        else:
+        # Pass through TOGGLE_MAIN_MENU and QUIT.
+        game_action = self._get_game_action(modified_key)
+        if (game_action == key_binding_manager.Action.TOGGLE_MAIN_MENU
+                or game_action == key_binding_manager.Action.QUIT):
+            self._is_dirty = True
             return False
+
+        if modified_key == self._KEY_SELECT_CURRENT_MENU_ITEM:
+            self._select_current_menu_item()
+            self._is_dirty = True
+        elif modified_key == self._KEY_UP:
+            self._change_current_menu_index(-1)
+            self._is_dirty = True
+        elif modified_key == self._KEY_DOWN:
+            self._change_current_menu_index(1)
+            self._is_dirty = True
+        return True
 
     def _select_current_menu_item(self):
         pass
@@ -79,7 +78,8 @@ def run_tests():
     import sys
     import test
     return test.run_doctests(sys.modules[__name__],
-                             module_dependencies=[key_binding_manager,
+                             module_dependencies=[key,
+                                                  key_binding_manager,
                                                   main_menu_view])
 
 if __name__ == '__main__':
