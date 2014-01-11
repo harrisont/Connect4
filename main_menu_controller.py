@@ -28,11 +28,14 @@ class MainMenuController:
         self._is_dirty = True
 
     def draw(self, surface):
-        if self.is_enabled():
-            self._view.draw(surface)
+        self._view.draw(surface, self.is_enabled())
+        self._is_dirty = False
 
     def is_dirty(self):
-        return self._is_dirty
+        return self._is_dirty or self._view.is_dirty()
+
+    def tick(self):
+        self._view.tick()
 
     def handle_event_key_down(self, modified_key):
         """
@@ -64,6 +67,7 @@ class MainMenuController:
     def _select_current_menu_item(self):
         entry = self._model.get_current_entry()
         entry.select()
+        self._view.on_menu_item_selected()
 
     def _get_game_action(self, modified_key):
         """

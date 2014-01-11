@@ -242,6 +242,9 @@ class View:
         self._track_newly_dropped_pieces()
         self._drop_dropping_pieces()
 
+        for layer in self._additional_layers:
+            layer.tick()
+
     def _track_newly_dropped_pieces(self):
         drop_history = self._get_drop_history()
         num_drops = len(drop_history)
@@ -289,8 +292,9 @@ class View:
     def add_layer(self, drawable):
         """
         @param drawable is an object that contains the following methods:
-            draw(Surface) -> None
             is_dirty() -> bool
+            draw(Surface) -> None
+            tick() -> None
         """
         return self._additional_layers.append(drawable)
 
