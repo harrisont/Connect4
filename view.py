@@ -288,7 +288,9 @@ class View:
 
     def add_layer(self, drawable):
         """
-        @param drawable is an object that contains a draw(Surface) method
+        @param drawable is an object that contains the following methods:
+            draw(Surface) -> None
+            is_dirty() -> bool
         """
         return self._additional_layers.append(drawable)
 
