@@ -123,7 +123,7 @@ def run_tests():
     """
     import sys
     import test
-    return test.run_doctests(sys.modules[__name__], module_dependencies=[key_binding_manager, view])
+    return test.run_doctests(sys.modules[__name__], module_dependencies=[key_binding_manager, model, view])
 
 if __name__ == '__main__':
     run_tests()
