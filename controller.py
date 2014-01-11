@@ -80,6 +80,9 @@ class Controller:
 
         >>> event.key = event_handler._get_key('move_right')
         >>> event_handler._handle_event(event)
+
+        >>> event.key = event_handler._get_key('new_game')
+        >>> event_handler._handle_event(event)
         """
         if event.type == pygame.QUIT:
             self._quit()
