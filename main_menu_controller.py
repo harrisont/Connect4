@@ -30,21 +30,21 @@ class MainMenuController:
     def is_dirty(self):
         return self._is_dirty
 
-    def handle_event_key_down(self, key):
+    def handle_event_key_down(self, modified_key):
         """
-        @param key a pygame.K_* value
+        @param modified_key a key.ModifiedKey
         """
-        self._is_dirty = self._handle_event_key_down_helper(key)
+        self._is_dirty = self._handle_event_key_down_helper(modified_key)
 
-    def _handle_event_key_down_helper(self, key):
+    def _handle_event_key_down_helper(self, modified_key):
         """
-        @param key a pygame.K_* value
+        @param modified_key a key.ModifiedKey
         @return True if the key was handled, False otherwise.
         """
         if not self.is_enabled():
             return False
 
-        if self._get_game_action(key) == key_binding_manager.Action.TOGGLE_MAIN_MENU:
+        if self._get_game_action(modified_key) == key_binding_manager.Action.TOGGLE_MAIN_MENU:
             self._is_enabled = False
             return True
         elif key == self._KEY_SELECT_CURRENT_MENU_ITEM:
@@ -66,11 +66,11 @@ class MainMenuController:
         max_index = len(self._menu_actions) - 1
         self._current_menu_index = min(max(0, self._current_menu_index + delta_index), max_index)
 
-    def _get_game_action(self, key):
+    def _get_game_action(self, modified_key):
         """
-        @param key a pygame.K_* value
+        @param modified_key a key.ModifiedKey
         """
-        return self._game_key_binding_manager.get_action(key)
+        return self._game_key_binding_manager.get_action(modified_key)
 
 def run_tests():
     """

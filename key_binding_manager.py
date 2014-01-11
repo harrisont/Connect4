@@ -1,3 +1,4 @@
+import key
 import pygame
 
 class Action:
@@ -9,12 +10,12 @@ class Action:
     TOGGLE_MAIN_MENU = 5
 
 class KeyBindingManager:
-    _KEY_QUIT = pygame.K_ESCAPE
-    _KEY_DROP_PIECE = pygame.K_DOWN
-    _KEY_MOVE_LEFT = pygame.K_LEFT
-    _KEY_MOVE_RIGHT = pygame.K_RIGHT
-    _KEY_NEW_GAME = pygame.K_RETURN
-    _KEY_TOGGLE_MAIN_MENU = pygame.K_SPACE
+    _KEY_QUIT = key.ModifiedKey(pygame.K_F4, key.Modifier.ALT)
+    _KEY_DROP_PIECE = key.ModifiedKey(pygame.K_DOWN)
+    _KEY_MOVE_LEFT = key.ModifiedKey(pygame.K_LEFT)
+    _KEY_MOVE_RIGHT = key.ModifiedKey(pygame.K_RIGHT)
+    _KEY_NEW_GAME = key.ModifiedKey(pygame.K_RETURN)
+    _KEY_TOGGLE_MAIN_MENU = key.ModifiedKey(pygame.K_SPACE)
 
     def __init__(self):
         self._action_to_key_map = {
@@ -43,9 +44,9 @@ class KeyBindingManager:
         """
         return self._action_to_key_map.get(action)
 
-    def get_action(self, key):
+    def get_action(self, modified_key):
         """
-        @param key a pygame.K_* value
+        @param modified_key a key.ModifiedKey
         @return the action that corresponds to the key, or None if there is none.
 
         >>> key_binding_manager = KeyBindingManager()
@@ -55,14 +56,14 @@ class KeyBindingManager:
         Returns None if the key has no corresponding action.
         >>> key_binding_manager.get_action(12345)
         """
-        return self._key_to_action_map.get(key)
+        return self._key_to_action_map.get(modified_key)
 
     def print_controls(self):
         print('Controls:')
-        print('\t{}: Toggle Menu'.format(pygame.key.name(self.get_key(Action.TOGGLE_MAIN_MENU))))
-        print('\t{}: Quit'.format(pygame.key.name(self.get_key(Action.QUIT))))
-        print('\t{}: Drop Piece'.format(pygame.key.name(self.get_key(Action.DROP_PIECE))))
-        print('\t{}/{}: Move'.format(pygame.key.name(self.get_key(Action.MOVE_LEFT)), pygame.key.name(self.get_key(Action.MOVE_RIGHT))))
+        print('\t{}: Toggle Menu'.format(self.get_key(Action.TOGGLE_MAIN_MENU)))
+        print('\t{}: Quit'.format(self.get_key(Action.QUIT)))
+        print('\t{}: Drop Piece'.format(self.get_key(Action.DROP_PIECE)))
+        print('\t{}/{}: Move'.format(self.get_key(Action.MOVE_LEFT), self.get_key(Action.MOVE_RIGHT)))
 
 def run_tests():
     """
@@ -70,7 +71,7 @@ def run_tests():
     """
     import sys
     import test
-    return test.run_doctests(sys.modules[__name__], module_dependencies=[])
+    return test.run_doctests(sys.modules[__name__], module_dependencies=[key])
 
 if __name__ == '__main__':
     run_tests()

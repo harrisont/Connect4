@@ -1,3 +1,4 @@
+import key
 import key_binding_manager
 import main_menu_controller
 import model
@@ -60,16 +61,17 @@ class Controller:
         if event.type == pygame.QUIT:
             self._quit()
         elif event.type == pygame.KEYDOWN:
-            self._handle_event_key_down(event.key)
+            modified_key = key.get_key_with_current_modifiers(event.key)
+            self._handle_event_key_down(modified_key)
 
-    def _handle_event_key_down(self, key):
+    def _handle_event_key_down(self, modified_key):
         """
-        @param key a pygame.K_* value
+        @param modified_key a key.ModifiedKey
         """
         if self._main_menu_controller.is_enabled():
-            self._main_menu_controller.handle_event_key_down(key)
+            self._main_menu_controller.handle_event_key_down(modified_key)
         else:
-            action = self._key_binding_manager.get_action(key)
+            action = self._key_binding_manager.get_action(modified_key)
             if action is not None:
                 self._handle_action(action)
 
@@ -131,7 +133,8 @@ def run_tests():
     import sys
     import test
     return test.run_doctests(sys.modules[__name__],
-                             module_dependencies=[key_binding_manager,
+                             module_dependencies=[key,
+                                                  key_binding_manager,
                                                   main_menu_controller,
                                                   model,
                                                   view])
