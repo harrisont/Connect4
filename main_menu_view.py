@@ -1,6 +1,15 @@
-import main_menu_model
-
 import pygame
+
+class FadeAnimation:
+    def __init__(self):
+        self.alpha = 255
+
+    def fade(self, amount):
+        """
+        @return True if the animation has finished, False otherwise.
+        """
+        self.alpha -= amount
+        return self.alpha < 0
 
 class MainMenuView:
     _BACKGROUND_COLOR = pygame.Color(0, 0, 0, 210)
@@ -10,6 +19,7 @@ class MainMenuView:
     _FONT_SIZE = 72
     _FONT_COLOR = pygame.Color(255, 255, 255)
     _FONT_HOVER_COLOR = pygame.Color(0, 0, 0)
+    _FADE_ANIMATION_SPEED = 5
 
     def __init__(self, model):
         self._model = model
@@ -19,7 +29,7 @@ class MainMenuView:
 
         self._size_x = self._calculate_size_x()
 
-        self._animation_x = None
+        self._fade_animation = None
 
     def _calculate_size_x(self):
         max_entry_size_x = 0
@@ -32,13 +42,13 @@ class MainMenuView:
         if is_enabled:
             background_surface = self._create_background()
 
-            self._draw_selection(background_surface, offset=(0, 0))
+            self._draw_selection(background_surface, self._get_current_entry_position())
             self._draw_entries(background_surface)
 
             screen.blit(background_surface, self._POSITION)
 
-        if self._animation_x is not None:
-            self._draw_animation(screen)
+        if self._fade_animation:
+            self._draw_fade_animation(screen)
 
     def _create_background(self):
         size = (self._size_x, len(self._model.entries) * self._get_entry_height())
@@ -48,54 +58,63 @@ class MainMenuView:
         return surface
 
     def _draw_entries(self, screen):
-        for index, entry in enumerate(self._model.entries):
-            position = self._get_entry_text_position(index)
+        for index in range(len(self._model.entries)):
+            self._draw_entry(screen, index, self._get_entry_text_position(index))
 
-            if index == self._model.current_index:
-                color = self._FONT_HOVER_COLOR
-            else:
-                color = self._FONT_COLOR
+    def _draw_entry(self, screen, index, position):
+        if index == self._model.current_index:
+            color = self._FONT_HOVER_COLOR
+        else:
+            color = self._FONT_COLOR
 
-            message_surface = self._font.render(entry.text, True, color)
-            screen.blit(message_surface, position)
+        entry = self._model.entries[index]
+        message_surface = self._font.render(entry.text, True, color)
+        screen.blit(message_surface, position)
 
     def _get_entry_text_position(self, entry_index):
-        entry_position_x, entry_position_y = self._get_entry_position(entry_index, offset=(0, 0))
+        entry_position_x, entry_position_y = self._get_entry_position(entry_index)
         return (entry_position_x + self._ENTRY_TEXT_PADDING_X,
                 entry_position_y + 0.1*self._font.get_linesize())
 
-    def _draw_selection(self, screen, offset):
-        """
-        @param offset (x, y)
-        """
-        size = (self._size_x, self._get_entry_height())
-        surface = pygame.Surface(size)
+    def _draw_selection(self, screen, position):
+        surface = pygame.Surface(self._get_selection_size())
         surface.fill(self._SELECTION_COLOR)
-        position = self._get_entry_position(self._model.current_index, offset)
         screen.blit(surface, position)
 
-    def _draw_animation(self, screen):
-        self._draw_selection(screen, offset=(self._animation_x, 0))
+    def _get_selection_size(self):
+        return self._size_x, self._get_entry_height()
 
-    def _get_entry_position(self, entry_index, offset):
-        """
-        @param offset (x, y)
-        """
-        return (offset[0], offset[1] + entry_index * self._get_entry_height())
+    def _draw_fade_animation(self, screen):
+        animation_surface = pygame.Surface(self._get_selection_size())
+        animation_surface.fill(self._BACKGROUND_COLOR)
+        animation_surface.set_alpha(self._fade_animation.alpha)
+
+        self._draw_selection(animation_surface, self._get_entry_position(0))
+        self._draw_entry(animation_surface, self._model.current_index, self._get_entry_text_position(0))
+
+        animation_surface_position = [a+b for a, b in zip(self._POSITION, self._get_current_entry_position())]
+        screen.blit(animation_surface, animation_surface_position)
+
+    def _get_entry_position(self, entry_index):
+        return 0, entry_index * self._get_entry_height()
+
+    def _get_current_entry_position(self):
+        return self._get_entry_position(self._model.current_index)
 
     def _get_entry_height(self):
         return 1.1*self._font.get_linesize()
 
     def is_dirty(self):
-        return self._animation_x is not None
+        return self._fade_animation is not None
 
     def on_menu_item_selected(self):
-        #self._animation_x = 0
-        pass
+        if self._model.get_current_entry().does_close_menu:
+            self._fade_animation = FadeAnimation()
 
     def tick(self):
-        if self._animation_x:
-            self._animation_x += 1
+        if self._fade_animation:
+            if self._fade_animation.fade(self._FADE_ANIMATION_SPEED):
+                self._fade_animation = None
 
 def run_tests():
     """

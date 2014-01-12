@@ -26,7 +26,7 @@ class Controller:
         self._view = None
         self._key_binding_manager = key_binding_manager.KeyBindingManager()
         self._main_menu_controller = main_menu_controller.MainMenuController(self._key_binding_manager,
-                                                                             self._on_new_game_menu_entry_selected,
+                                                                             self._reset_game,
                                                                              self._quit)
         self._reset_game()
 
@@ -41,10 +41,6 @@ class Controller:
         self._model.reset_game()
         if self._view:
             self._view.reset()
-
-    def _on_new_game_menu_entry_selected(self):
-        self._toggle_main_menu()
-        self._reset_game()
 
     def run(self):
         self._key_binding_manager.print_controls()

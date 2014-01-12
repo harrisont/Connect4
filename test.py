@@ -14,7 +14,7 @@ Here D's run_tests function is called twice: once each for B and C.
 def run_doctests(module, module_dependencies=None):
     """
     @param module the module to test
-    @param module_dependencies iteratable(module-with-run_tests-method)
+    @param module_dependencies iterable(module-with-run_tests-method)
     @return ((failure_count, test_count), tested_modules)
     """
     import doctest

@@ -1,7 +1,8 @@
 class Entry:
-    def __init__(self, text, on_select_func):
+    def __init__(self, text, on_select_func, does_close_menu):
         self.text = text
         self._on_select_func = on_select_func
+        self.does_close_menu = does_close_menu
 
     def select(self):
         self._on_select_func()

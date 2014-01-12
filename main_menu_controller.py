@@ -14,9 +14,10 @@ class MainMenuController:
         self._game_key_binding_manager = game_key_binding_manager
         self._is_enabled = True
         self._model = main_menu_model.MainMenuModel([
-            main_menu_model.Entry('New Game', new_game_func),
-            main_menu_model.Entry('Controls', lambda: print('TODO(#6): show controls menu')),
-            main_menu_model.Entry('Quit', quit_func)])
+            main_menu_model.Entry('New Game', self._get_toggle_then_call_func_func(new_game_func), does_close_menu=True),
+            main_menu_model.Entry('Controls', lambda: print('TODO(#6): show controls menu'), does_close_menu=False),
+            main_menu_model.Entry('Quit', quit_func, does_close_menu=False),
+        ])
         self._view = main_menu_view.MainMenuView(self._model)
         self._is_dirty = False
 
@@ -26,6 +27,12 @@ class MainMenuController:
     def toggle(self):
         self._is_enabled = not self._is_enabled
         self._is_dirty = True
+
+    def _get_toggle_then_call_func_func(self, func):
+        def toggle_then_call_func_func():
+            self.toggle()
+            func()
+        return toggle_then_call_func_func
 
     def draw(self, surface):
         self._view.draw(surface, self.is_enabled())
