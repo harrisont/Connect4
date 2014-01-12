@@ -54,7 +54,8 @@ class Controller:
             self._tick_view()
             self._draw()
 
-    def _quit(self):
+    @staticmethod
+    def _quit():
         pygame.quit()
         sys.exit()
 

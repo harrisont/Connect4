@@ -29,7 +29,7 @@ class KeyBindingManager:
         self._on_action_to_key_map_changed()
 
     def _on_action_to_key_map_changed(self):
-        self._key_to_action_map = {value: key for key, value in self._action_to_key_map.items()}
+        self._key_to_action_map = {modified_key: action for action, modified_key in self._action_to_key_map.items()}
 
     def get_key(self, action):
         """

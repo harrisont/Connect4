@@ -21,7 +21,7 @@ class Model:
         self._initialize_board()
 
     def _initialize_board(self):
-        self._openings = [[Piece.NONE for y in range(self.size_y)] for x in range(self.size_x)]
+        self._openings = [[Piece.NONE for _ in range(self.size_y)] for _ in range(self.size_x)]
 
     def initialize_from_picture(self, pieces):
         """
