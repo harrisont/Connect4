@@ -4,9 +4,11 @@ import pygame
 
 import os
 
+
 class ViewState:
     PLAYING = 1
     GAME_OVER = 2
+
 
 class DropAnimation:
     def __init__(self, piece, board_x, board_y_initial, board_y_final):
@@ -25,6 +27,7 @@ class DropAnimation:
             return True
         else:
             return False
+
 
 class View:
     _WINDOW_SIZE_X = 800
@@ -102,9 +105,9 @@ class View:
 
     def _is_dirty(self, drop_x):
         return (len(self._drop_animations) > 0
-            or drop_x != self._last_drop_x
-            or self._dirty
-            or any([layer.is_dirty() for layer in self._additional_layers]))
+                or drop_x != self._last_drop_x
+                or self._dirty
+                or any([layer.is_dirty() for layer in self._additional_layers]))
 
     def _draw_pieces_at_rest(self):
         for x in range(self._model.size_x):
@@ -131,7 +134,7 @@ class View:
 
         board_surface = pygame.Surface((width, height), pygame.SRCALPHA)
         board_surface.fill(self._BOARD_COLOR)
-        board_surface.blit(openings_surface, (0,0), area=None, special_flags=pygame.BLEND_RGBA_SUB)
+        board_surface.blit(openings_surface, (0, 0), area=None, special_flags=pygame.BLEND_RGBA_SUB)
         return board_surface
 
     def _draw_board(self):
@@ -174,7 +177,7 @@ class View:
             self._draw_piece(self._model.current_player_piece, drop_x, drop_y, potential_piece=True)
 
     def _get_board_position(self):
-        return (self._BOARD_MARGIN, self._BOARD_MARGIN)
+        return self._BOARD_MARGIN, self._BOARD_MARGIN
 
     def _get_board_rect(self):
         """Returns the (left, top, width, height) of the board."""
@@ -191,8 +194,12 @@ class View:
         """
         offset_x, offset_y = offset
         flipped_y = self._model.size_y - y - 1
-        return (int(offset_x + (x+1) * self._BOARD_OPENING_MARGIN + (2*x + 1) * self._BOARD_OPENING_RADIUS),
-                int(offset_y + (flipped_y+1) * self._BOARD_OPENING_MARGIN + (2*flipped_y + 1) * self._BOARD_OPENING_RADIUS))
+        return (int(offset_x
+                    + (x+1) * self._BOARD_OPENING_MARGIN
+                    + (2*x + 1) * self._BOARD_OPENING_RADIUS),
+                int(offset_y
+                    + (flipped_y+1) * self._BOARD_OPENING_MARGIN
+                    + (2*flipped_y + 1) * self._BOARD_OPENING_RADIUS))
 
     def _get_piece_color(self, piece, potential_piece):
         if potential_piece:
@@ -222,7 +229,7 @@ class View:
 
     def _draw_winning_pieces(self, winning_piece_positions):
         """
-        @param winning_piece_positions [(winning_piece_1_x, winning_piece_1_y), (winning_piece_2_x, winning_piece_2_y), ...]
+        @param winning_piece_positions [(piece_1_x, piece_1_y), (piece_2_x, piece_2_y), ...]
         """
         color = self._WINNING_PIECES_LINE_COLOR
         board_position = self._get_board_position()
@@ -275,7 +282,6 @@ class View:
 
     def drop_all_pieces_off_of_board_from_current_location(self):
         drop_history = self._get_drop_history()
-        num_drops = len(drop_history)
         y_final = -1
         existing_drop_animations = self._drop_animations.copy()
         for piece, x, y_initial in drop_history:
@@ -298,6 +304,7 @@ class View:
         """
         return self._additional_layers.append(drawable)
 
+
 def run_tests():
     """
     @return (failure_count, test_count)
@@ -305,6 +312,7 @@ def run_tests():
     import sys
     import test
     return test.run_doctests(sys.modules[__name__], module_dependencies=[model])
+
 
 if __name__ == '__main__':
     run_tests()

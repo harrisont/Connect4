@@ -2,12 +2,14 @@ import key
 
 import pygame
 
+
 class Action:
     QUIT = 0
     DROP_PIECE = 1
     MOVE_LEFT = 2
     MOVE_RIGHT = 3
     TOGGLE_MAIN_MENU = 4
+
 
 class KeyBindingManager:
     _KEY_QUIT = key.ModifiedKey(pygame.K_F4, key.Modifier.ALT)
@@ -27,7 +29,7 @@ class KeyBindingManager:
         self._on_action_to_key_map_changed()
 
     def _on_action_to_key_map_changed(self):
-        self._key_to_action_map = {value:key for key, value in self._action_to_key_map.items()}
+        self._key_to_action_map = {value: key for key, value in self._action_to_key_map.items()}
 
     def get_key(self, action):
         """
@@ -63,6 +65,7 @@ class KeyBindingManager:
         print('\t{}: Drop Piece'.format(self.get_key(Action.DROP_PIECE)))
         print('\t{}/{}: Move'.format(self.get_key(Action.MOVE_LEFT), self.get_key(Action.MOVE_RIGHT)))
 
+
 def run_tests():
     """
     @return (failure_count, test_count)
@@ -70,6 +73,7 @@ def run_tests():
     import sys
     import test
     return test.run_doctests(sys.modules[__name__], module_dependencies=[key])
+
 
 if __name__ == '__main__':
     run_tests()

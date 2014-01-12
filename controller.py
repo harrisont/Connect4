@@ -8,6 +8,7 @@ import pygame
 
 import sys
 
+
 class Controller:
     """
     >>> controller = Controller()
@@ -130,6 +131,7 @@ class Controller:
     def _is_game_playing(self):
         return self._model.winning_player is None
 
+
 def run_tests():
     """
     @return (failure_count, test_count)
@@ -142,6 +144,7 @@ def run_tests():
                                                   main_menu_controller,
                                                   model,
                                                   view])
+
 
 if __name__ == '__main__':
     run_tests()

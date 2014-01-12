@@ -3,6 +3,7 @@ class Piece:
     PLAYER1 = 1
     PLAYER2 = 2
 
+
 class Model:
     def __init__(self, consecutive_pieces_to_win, size):
         """
@@ -445,6 +446,7 @@ class Model:
                 string += '\n'
         return string
 
+
 def run_tests():
     """
     @return (failure_count, test_count)
@@ -452,6 +454,7 @@ def run_tests():
     import sys
     import test
     return test.run_doctests(sys.modules[__name__], module_dependencies=[])
+
 
 if __name__ == '__main__':
     run_tests()

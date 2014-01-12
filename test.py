@@ -11,6 +11,7 @@ e.g.
 Here D's run_tests function is called twice: once each for B and C.
 """
 
+
 def run_doctests(module, module_dependencies=None):
     """
     @param module the module to test

@@ -1,5 +1,6 @@
 import pygame
 
+
 class Modifier:
     """
     Modifier key bitmap values
@@ -23,6 +24,7 @@ class Modifier:
     CTRL = 1
     SHIFT = 2
     ALT = 4
+
 
 class ModifiedKey:
     def __init__(self, key, modifiers=0):
@@ -61,6 +63,7 @@ class ModifiedKey:
             modifier_str += 'shift+'
         return modifier_str + pygame.key.name(self.key)
 
+
 def get_key_with_current_modifiers(key):
     """
     @return ModifiedKey
@@ -76,6 +79,7 @@ def get_key_with_current_modifiers(key):
 
     return ModifiedKey(key, modifiers)
 
+
 def run_tests():
     """
     @return (failure_count, test_count)
@@ -83,6 +87,7 @@ def run_tests():
     import sys
     import test
     return test.run_doctests(sys.modules[__name__], module_dependencies=[])
+
 
 if __name__ == '__main__':
     run_tests()

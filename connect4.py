@@ -1,8 +1,10 @@
 import controller
 
+
 def _main():
     game_controller = controller.Controller()
     game_controller.run()
+
 
 def run_tests():
     """
@@ -11,6 +13,7 @@ def run_tests():
     import sys
     import test
     return test.run_doctests(sys.modules[__name__], module_dependencies=[controller])
+
 
 if __name__ == '__main__':
     (failure_count, test_count), tested_modules = run_tests()

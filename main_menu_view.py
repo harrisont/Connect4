@@ -1,5 +1,6 @@
 import pygame
 
+
 class FadeAnimation:
     def __init__(self):
         self.alpha = 255
@@ -10,6 +11,7 @@ class FadeAnimation:
         """
         self.alpha -= amount
         return self.alpha < 0
+
 
 class MainMenuView:
     _BACKGROUND_COLOR = pygame.Color(0, 0, 0, 210)
@@ -116,6 +118,7 @@ class MainMenuView:
             if self._fade_animation.fade(self._FADE_ANIMATION_SPEED):
                 self._fade_animation = None
 
+
 def run_tests():
     """
     @return (failure_count, test_count)
@@ -123,6 +126,7 @@ def run_tests():
     import sys
     import test
     return test.run_doctests(sys.modules[__name__], module_dependencies=[])
+
 
 if __name__ == '__main__':
     run_tests()

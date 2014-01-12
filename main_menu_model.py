@@ -7,6 +7,7 @@ class Entry:
     def select(self):
         self._on_select_func()
 
+
 class MainMenuModel:
     def __init__(self, entries):
         self.entries = entries
@@ -18,6 +19,7 @@ class MainMenuModel:
     def get_current_entry(self):
         return self.entries[self.current_index]
 
+
 def run_tests():
     """
     @return (failure_count, test_count)
@@ -25,6 +27,7 @@ def run_tests():
     import sys
     import test
     return test.run_doctests(sys.modules[__name__], module_dependencies=[])
+
 
 if __name__ == '__main__':
     run_tests()
