@@ -15,13 +15,16 @@ class DropAnimation:
         self.piece = piece
         self.board_x = board_x
         self.board_y = board_y_initial
+        self.board_y_initial = board_y_initial
         self.board_y_final = board_y_final
+        self._accumulator = 0
 
-    def drop(self, delta_y):
+    def drop(self, delta):
         """
         @return True if the animation is done, False otherwise.
         """
-        self.board_y -= delta_y
+        self._accumulator += delta
+        self.board_y = self.board_y_initial - self._accumulator**2
         if self.board_y <= self.board_y_final:
             self.board_y = self.board_y_final
             return True
@@ -52,7 +55,7 @@ class View:
     _BOARD_OPENING_RADIUS = 40
     _BOARD_OPENING_MARGIN = 15
 
-    _PIECE_DROP_RATE = 10  # board-positions per second
+    _PIECE_DROP_RATE = 5  # board-positions per second
 
     def __init__(self, view_model):
         self.reset()
@@ -92,7 +95,8 @@ class View:
         self._draw_board()
 
         if self._state == ViewState.PLAYING:
-            self._draw_drop_location(drop_x)
+            if not self._drop_animations:
+                self._draw_drop_location(drop_x)
         elif self._state == ViewState.GAME_OVER:
             self._draw_won_message()
 
@@ -257,7 +261,7 @@ class View:
         num_drops = len(drop_history)
         for drop_history_index in range(self._last_tracked_num_drops, num_drops):
             piece, x, y_final = drop_history[drop_history_index]
-            y_initial = self._model.size_y - 1
+            y_initial = self._model.size_y
             self._drop_animations.append(DropAnimation(piece, x, y_initial, y_final))
         self._last_tracked_num_drops = num_drops
 
