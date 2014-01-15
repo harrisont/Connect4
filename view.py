@@ -86,6 +86,7 @@ class View:
     _BOARD_OPENING_MARGIN = 15
 
     _ANIMATION_SPEED_MULTIPLIER = 8
+    _DRAW_DROP_X_DELAY_AFTER_DROP = 1 / _ANIMATION_SPEED_MULTIPLIER # seconds
 
     def __init__(self, view_model):
         self.reset()
@@ -111,12 +112,15 @@ class View:
         self._state = ViewState.PLAYING
         self._last_tracked_num_drops = 0
         self._last_drop_x = -1
+        self._time_since_last_drop = 1000000 # large number
         self._dirty = True
 
     def draw(self, drop_x):
         # Optimization to skip the draw step if nothing changed.
         if not self._is_dirty(drop_x):
             return
+
+        self._dirty = False
 
         self._screen.fill(self._BACKGROUND_COLOR)
 
@@ -125,8 +129,11 @@ class View:
         self._draw_board()
 
         if self._state == ViewState.PLAYING:
-            if not self._drop_animations:
+            if self._time_since_last_drop >= self._DRAW_DROP_X_DELAY_AFTER_DROP:
                 self._draw_drop_x(drop_x)
+            else:
+                self._dirty = True
+            if not self._drop_animations:
                 self._draw_drop_preview(drop_x)
         elif self._state == ViewState.GAME_OVER:
             self._draw_won_message()
@@ -136,7 +143,6 @@ class View:
 
         pygame.display.flip()
         self._last_drop_x = drop_x
-        self._dirty = False
 
     def _is_dirty(self, drop_x):
         return (len(self._drop_animations) > 0
@@ -285,6 +291,8 @@ class View:
         self._track_newly_dropped_pieces()
         self._drop_dropping_pieces()
 
+        self._time_since_last_drop += 1 / self._DESIRED_FPS
+
         for layer in self._additional_layers:
             layer.tick()
 
@@ -295,6 +303,7 @@ class View:
             piece, x, y_final = drop_history[drop_history_index]
             y_initial = self._model.size_y
             self._drop_animations.append(DropAnimation(piece, x, y_initial, y_final, bounce=True))
+            self._time_since_last_drop = 0
         self._last_tracked_num_drops = num_drops
 
     def _get_drop_history(self):
