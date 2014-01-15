@@ -117,9 +117,8 @@ class View:
 
     def reset(self):
         """
-        Do not reset self._drop_animations or self._last_tracked_num_drops because we want these to
-        persist across games to support animating the pieces from the previous game being dropped
-        off of the board.
+        Do not reset self._drop_animations because we want these to persist across games to support
+        animating the pieces from the previous game being dropped off of the board.
         """
         self._state = ViewState.PLAYING
         self._last_tracked_num_drops = 0
@@ -325,7 +324,6 @@ class View:
         delta_y = self._ANIMATION_SPEED_MULTIPLIER / self._DESIRED_FPS
         finished_drop_animation_indices = []
 
-        print(len(self._drop_animations))
         for drop_animation_index, drop_animation in enumerate(self._drop_animations):
             drop_finished = drop_animation.drop(delta_y)
             if drop_finished:
