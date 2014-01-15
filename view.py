@@ -343,7 +343,7 @@ class View:
         for piece, x, y_initial in drop_history:
             has_existing_drop_animation = False
             for exiting_drop_animation in existing_drop_animations:
-                if exiting_drop_animation.board_y_final == y_initial:
+                if exiting_drop_animation.board_x == x and exiting_drop_animation.board_y_final == y_initial:
                     exiting_drop_animation.board_y_final = y_final
                     exiting_drop_animation.prevent_new_bounce()
                     has_existing_drop_animation = True
