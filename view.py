@@ -2,6 +2,7 @@ import model
 
 import pygame
 
+import math
 import os
 
 
@@ -11,25 +12,54 @@ class ViewState:
 
 
 class DropAnimation:
-    def __init__(self, piece, board_x, board_y_initial, board_y_final):
+    _COEFFICIENT_OF_RESTITITION = 0.3 # Bounciness [0-1)
+
+    def __init__(self, piece, board_x, board_y_initial, board_y_final, bounce):
         self.piece = piece
         self.board_x = board_x
         self.board_y = board_y_initial
         self.board_y_initial = board_y_initial
         self.board_y_final = board_y_final
-        self._accumulator = 0
+        self._time = 0
+        self._bounce = bounce
 
     def drop(self, delta):
         """
         @return True if the animation is done, False otherwise.
         """
-        self._accumulator += delta
-        self.board_y = self.board_y_initial - self._accumulator**2
-        if self.board_y <= self.board_y_final:
+        self._time += delta
+        self.board_y = self._get_y(self._time)
+        if self._is_finished():
             self.board_y = self.board_y_final
             return True
         else:
             return False
+
+    def _get_y(self, time):
+        if not self._bounce or time <= self._get_bounce_1_time():
+            y = self._get_y_after_0_bounces(time)
+            return y
+        else:
+            y = self._get_y_after_1_bounces(time)
+            return y
+
+    def _get_bounce_1_time(self):
+        return math.sqrt(self.board_y_initial - self.board_y_final)
+
+    def _get_y_after_0_bounces(self, time):
+        y0 = self.board_y_initial
+        return -time**2 + y0
+
+    def _get_y_after_1_bounces(self, time):
+        y0 = self.board_y_initial
+        yf = self.board_y_final
+        dy = y0 - yf
+        c =  self._COEFFICIENT_OF_RESTITITION
+        return -time**2 + 2*math.sqrt(dy)*(1+c)*time + yf - dy - 2*dy*c
+
+    def _is_finished(self):
+        return (self.board_y <= self.board_y_final
+                and (not self._bounce or self._time >= self._get_bounce_1_time()))
 
 
 class View:
@@ -55,7 +85,7 @@ class View:
     _BOARD_OPENING_RADIUS = 40
     _BOARD_OPENING_MARGIN = 15
 
-    _PIECE_DROP_RATE = 5  # board-positions per second
+    _ANIMATION_SPEED_MULTIPLIER = 8
 
     def __init__(self, view_model):
         self.reset()
@@ -262,14 +292,14 @@ class View:
         for drop_history_index in range(self._last_tracked_num_drops, num_drops):
             piece, x, y_final = drop_history[drop_history_index]
             y_initial = self._model.size_y
-            self._drop_animations.append(DropAnimation(piece, x, y_initial, y_final))
+            self._drop_animations.append(DropAnimation(piece, x, y_initial, y_final, bounce=True))
         self._last_tracked_num_drops = num_drops
 
     def _get_drop_history(self):
         return self._model.drop_history
 
     def _drop_dropping_pieces(self):
-        delta_y = self._PIECE_DROP_RATE / self._DESIRED_FPS
+        delta_y = self._ANIMATION_SPEED_MULTIPLIER / self._DESIRED_FPS
         finished_drop_animation_indices = []
 
         for drop_animation_index, drop_animation in enumerate(self._drop_animations):
@@ -297,7 +327,7 @@ class View:
                     break
             if has_existing_drop_animation:
                 continue
-            self._drop_animations.append(DropAnimation(piece, x, y_initial, y_final))
+            self._drop_animations.append(DropAnimation(piece, x, y_initial, y_final, bounce=False))
 
     def add_layer(self, drawable):
         """
