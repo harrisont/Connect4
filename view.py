@@ -20,8 +20,16 @@ class DropAnimation:
         self.board_y = board_y_initial
         self.board_y_initial = board_y_initial
         self.board_y_final = board_y_final
-        self.bounce = bounce
+        self._bounce = bounce
+        self._is_bouncing = False
+        self._prevent_new_bounce = False
         self._time = 0
+        self._bounce_1_time = math.sqrt(board_y_initial - board_y_final)
+        self._get_y_after_1_bounce = self._create_get_y_after_1_bounces_func(board_y_initial, board_y_final)
+
+    def prevent_new_bounce(self):
+        """Prevents the drop from bouncing if it hasn't started yet."""
+        self._prevent_new_bounce = True
 
     def drop(self, delta):
         """
@@ -36,30 +44,33 @@ class DropAnimation:
             return False
 
     def _get_y(self, time):
-        if not self.bounce or time <= self._get_bounce_1_time():
+        if (not self._bounce
+                or time <= self._bounce_1_time
+                or (not self._is_bouncing and self._prevent_new_bounce)):
             y = self._get_y_after_0_bounces(time)
             return y
         else:
-            y = self._get_y_after_1_bounces(time)
+            self._is_bouncing = True
+            y = self._get_y_after_1_bounce(time)
             return y
-
-    def _get_bounce_1_time(self):
-        return math.sqrt(self.board_y_initial - self.board_y_final)
 
     def _get_y_after_0_bounces(self, time):
         y0 = self.board_y_initial
         return -time**2 + y0
 
-    def _get_y_after_1_bounces(self, time):
-        y0 = self.board_y_initial
-        yf = self.board_y_final
+    @classmethod
+    def _create_get_y_after_1_bounces_func(classobj, board_y_initial, board_y_final):
+        y0 = board_y_initial
+        yf = board_y_final
         dy = y0 - yf
-        c =  self._COEFFICIENT_OF_RESTITITION
-        return -time**2 + 2*math.sqrt(dy)*(1+c)*time + yf - dy - 2*dy*c
+        c =  classobj._COEFFICIENT_OF_RESTITITION
+        constant_1 = 2*math.sqrt(dy)*(1+c)
+        constant_2 = yf - dy - 2*dy*c
+        return lambda time: -time**2 + constant_1*time + constant_2
 
     def _is_finished(self):
         return (self.board_y <= self.board_y_final
-                and (not self.bounce or self._time >= self._get_bounce_1_time()))
+                and (not self._is_bouncing or self._time >= self._bounce_1_time))
 
 
 class View:
@@ -85,7 +96,7 @@ class View:
     _BOARD_OPENING_RADIUS = 40
     _BOARD_OPENING_MARGIN = 15
 
-    _ANIMATION_SPEED_MULTIPLIER = 8
+    _ANIMATION_SPEED_MULTIPLIER = .8
     _DRAW_DROP_X_DELAY_AFTER_DROP = 1 / _ANIMATION_SPEED_MULTIPLIER # seconds
 
     def __init__(self, view_model):
@@ -106,8 +117,9 @@ class View:
 
     def reset(self):
         """
-        Do not reset self._drop_animations because we want these to persist across games to support
-        animating the pieces from the previous game being dropped off of the board.
+        Do not reset self._drop_animations or self._last_tracked_num_drops because we want these to
+        persist across games to support animating the pieces from the previous game being dropped
+        off of the board.
         """
         self._state = ViewState.PLAYING
         self._last_tracked_num_drops = 0
@@ -313,6 +325,7 @@ class View:
         delta_y = self._ANIMATION_SPEED_MULTIPLIER / self._DESIRED_FPS
         finished_drop_animation_indices = []
 
+        print(len(self._drop_animations))
         for drop_animation_index, drop_animation in enumerate(self._drop_animations):
             drop_finished = drop_animation.drop(delta_y)
             if drop_finished:
@@ -334,7 +347,7 @@ class View:
             for exiting_drop_animation in existing_drop_animations:
                 if exiting_drop_animation.board_y_final == y_initial:
                     exiting_drop_animation.board_y_final = y_final
-                    exiting_drop_animation.bounce = False
+                    exiting_drop_animation.prevent_new_bounce()
                     has_existing_drop_animation = True
                     break
             if has_existing_drop_animation:
