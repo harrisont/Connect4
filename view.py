@@ -126,7 +126,8 @@ class View:
 
         if self._state == ViewState.PLAYING:
             if not self._drop_animations:
-                self._draw_drop_location(drop_x)
+                self._draw_drop_x(drop_x)
+                self._draw_drop_preview(drop_x)
         elif self._state == ViewState.GAME_OVER:
             self._draw_won_message()
 
@@ -203,9 +204,10 @@ class View:
         opening_center = self._get_opening_center(x, y, offset)
         pygame.draw.circle(surface, color, opening_center, self._BOARD_OPENING_RADIUS)
 
-    def _draw_drop_location(self, drop_x):
+    def _draw_drop_x(self, drop_x):
         self._draw_piece(self._model.current_player_piece, drop_x, self._model.size_y)
 
+    def _draw_drop_preview(self, drop_x):
         drop_y = self._model.get_drop_row(drop_x)
         if drop_y >= 0:
             self._draw_piece(self._model.current_player_piece, drop_x, drop_y, potential_piece=True)
