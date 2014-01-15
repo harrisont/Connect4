@@ -20,8 +20,8 @@ class DropAnimation:
         self.board_y = board_y_initial
         self.board_y_initial = board_y_initial
         self.board_y_final = board_y_final
+        self.bounce = bounce
         self._time = 0
-        self._bounce = bounce
 
     def drop(self, delta):
         """
@@ -36,7 +36,7 @@ class DropAnimation:
             return False
 
     def _get_y(self, time):
-        if not self._bounce or time <= self._get_bounce_1_time():
+        if not self.bounce or time <= self._get_bounce_1_time():
             y = self._get_y_after_0_bounces(time)
             return y
         else:
@@ -59,7 +59,7 @@ class DropAnimation:
 
     def _is_finished(self):
         return (self.board_y <= self.board_y_final
-                and (not self._bounce or self._time >= self._get_bounce_1_time()))
+                and (not self.bounce or self._time >= self._get_bounce_1_time()))
 
 
 class View:
@@ -334,6 +334,7 @@ class View:
             for exiting_drop_animation in existing_drop_animations:
                 if exiting_drop_animation.board_y_final == y_initial:
                     exiting_drop_animation.board_y_final = y_final
+                    exiting_drop_animation.bounce = False
                     has_existing_drop_animation = True
                     break
             if has_existing_drop_animation:
