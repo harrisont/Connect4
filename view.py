@@ -60,6 +60,15 @@ class DropAnimation:
 
     @classmethod
     def _create_get_y_after_1_bounces_func(classobj, board_y_initial, board_y_final):
+        """
+        @return a function y(t) that returns the board-y position after the first bounce.
+        y(t) satisfies the following constraints:
+         * y(t_bounce) = y_after_0_bounces(t_bounce)
+            This is because the position is the same as the equations transition just after the bounce.
+         * velocity(t_bounce) = -c * velocity_after_0_bounces(t_bounce)
+            This represents the bounce flipping the velocity and the coefficient of restitition.
+
+        """
         y0 = board_y_initial
         yf = board_y_final
         dy = y0 - yf
