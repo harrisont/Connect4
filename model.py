@@ -289,6 +289,20 @@ class Model:
         >>> m._check_for_win(Piece.PLAYER1, 2, 0)
         [(0, 0), (1, 0), (2, 0)]
 
+        >>> m = Model._create_from_picture(3, (4, 3), [
+        ... 0, 0, 0, 0,
+        ... 0, 0, 0, 0,
+        ... 1, 1, 0, 1])
+        >>> m._check_for_win(Piece.PLAYER1, 2, 0)
+        [(0, 0), (1, 0), (2, 0), (3, 0)]
+
+        >>> m = Model._create_from_picture(3, (5, 3), [
+        ... 0, 0, 0, 0, 0,
+        ... 0, 0, 0, 0, 0,
+        ... 1, 1, 0, 1, 1])
+        >>> m._check_for_win(Piece.PLAYER1, 2, 0)
+        [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0)]
+
         Vertical checks:
         -----------------------------------------------------------------------
         >>> m = Model._create_from_picture(3, (4, 3), [
@@ -355,6 +369,22 @@ class Model:
         ... 0, 1, 2, 1])
         >>> m._check_for_win(Piece.PLAYER1, 2, 1)
         [(1, 2), (2, 1), (3, 0)]
+
+        >>> m = Model._create_from_picture(3, (4, 4), [
+        ... 2, 0, 0, 0,
+        ... 1, 0, 1, 0,
+        ... 1, 2, 2, 0,
+        ... 2, 1, 1, 2])
+        >>> m._check_for_win(Piece.PLAYER2, 1, 2)
+        [(0, 3), (1, 2), (2, 1), (3, 0)]
+
+        >>> m = Model._create_from_picture(3, (4, 4), [
+        ... 2, 0, 0, 2,
+        ... 1, 1, 0, 1,
+        ... 1, 2, 2, 1,
+        ... 2, 1, 1, 2])
+        >>> m._check_for_win(Piece.PLAYER2, 2, 2)
+        [(0, 0), (1, 1), (2, 2), (3, 3)]
         """
         for slope_x, slope_y in ((1,0), (0,1), (1,1), (1,-1)):
             for start_x, start_y in ((piece_x - slope_x*i, piece_y - slope_y*i) for i in range(self.consecutive_pieces_to_win)):
@@ -371,13 +401,24 @@ class Model:
                         winning_piece_positions = None
                         break
                 if winning_piece_positions:
+                    # Check if there are additional winning pieces that exceed the number required to win.
+                    # e.g. a 5-in-a-row when only 4 are required
+                    if slope_x != 0:
+                        num_previous_pieces_to_check = self.consecutive_pieces_to_win + (start_x - piece_x)
+                        for x, y in ((start_x - slope_x*i, start_y - slope_y*i)
+                                     for i in range(1, 1 + num_previous_pieces_to_check)):
+                            current_piece = self._get_piece_at_opening_or_none(x, y)
+                            if current_piece == piece:
+                                winning_piece_positions.insert(0, (x, y))
+                            else:
+                                break
                     return winning_piece_positions
 
         return False
 
     def _is_tie(self):
         """
-        @return True if the current board state is a tie.  False otherwise.
+        @return True if the current board state is a tie.  This is the same as the board being full.  False otherwise.
 
         >>> m = Model._create_from_picture(3, (3, 3), [
         ... 0, 0, 0,
