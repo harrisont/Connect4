@@ -389,9 +389,8 @@ class Model:
         for slope_x, slope_y in ((1,0), (0,1), (1,1), (1,-1)):
             for start_x, start_y in ((piece_x - slope_x*i, piece_y - slope_y*i) for i in range(self.consecutive_pieces_to_win)):
                 winning_piece_positions = []
-                for delta_x, delta_y in ((slope_x*i, slope_y*i) for i in range(self.consecutive_pieces_to_win)):
-                    x = start_x + delta_x
-                    y = start_y + delta_y
+                for x, y in ((start_x + slope_x*i, start_y + slope_y*i)
+                             for i in range(self.consecutive_pieces_to_win)):
                     winning_piece_positions.append((x, y))
                     # Don't need to check the piece that is being placed
                     if (x, y) == (piece_x, piece_y):
