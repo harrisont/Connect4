@@ -14,9 +14,21 @@ class MainMenuController:
         self._game_key_binding_manager = game_key_binding_manager
         self._is_enabled = True
         self._model = main_menu_model.MainMenuModel([
-            main_menu_model.Entry('New Game', self._get_toggle_then_call_func_func(new_game_func), does_close_menu=True),
-            main_menu_model.Entry('Controls', lambda: print('TODO(#6): show controls menu'), does_close_menu=False),
-            main_menu_model.Entry('Quit', quit_func, does_close_menu=False),
+            main_menu_model.Entry('New Game',
+                                  on_select_func=self._get_toggle_then_call_func_func(new_game_func),
+                                  on_hover_start_func=None,
+                                  on_hover_end_func=None,
+                                  does_close_menu=True),
+            main_menu_model.Entry('Controls',
+                                  on_select_func=None,
+                                  on_hover_start_func=lambda: print('TODO(#6): show controls menu'),
+                                  on_hover_end_func=lambda: print('TODO(#6): hide controls menu'),
+                                  does_close_menu=False),
+            main_menu_model.Entry('Quit',
+                                  on_select_func=quit_func,
+                                  on_hover_start_func=None,
+                                  on_hover_end_func=None,
+                                  does_close_menu=False),
         ])
         self._view = main_menu_view.MainMenuView(self._model)
 
@@ -77,10 +89,15 @@ class MainMenuController:
         self._view.on_menu_item_selected()
 
     def _change_entry_index(self, delta_index):
+        old_entry = self._model.get_current_entry()
+        old_entry.end_hover()
+
         self._model.change_current_index(delta_index)
         self._on_entry_index_changed()
 
     def _on_entry_index_changed(self):
+        entry = self._model.get_current_entry()
+        entry.start_hover()
         self._is_dirty = True
 
     def _get_game_action(self, modified_key):

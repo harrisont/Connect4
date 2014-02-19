@@ -1,11 +1,22 @@
 class Entry:
-    def __init__(self, text, on_select_func, does_close_menu):
+    def __init__(self, text, on_select_func, on_hover_start_func, on_hover_end_func, does_close_menu):
         self.text = text
         self._on_select_func = on_select_func
+        self._on_hover_start_func = on_hover_start_func
+        self._on_hover_end_func = on_hover_end_func
         self.does_close_menu = does_close_menu
 
     def select(self):
-        self._on_select_func()
+        if self._on_select_func:
+            self._on_select_func()
+
+    def start_hover(self):
+        if self._on_hover_start_func:
+            self._on_hover_start_func()
+
+    def end_hover(self):
+        if self._on_hover_end_func:
+            self._on_hover_end_func()
 
 
 class MainMenuModel:
