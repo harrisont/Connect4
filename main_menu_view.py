@@ -53,8 +53,9 @@ class MainMenuView:
             self._draw_fade_animation(screen)
 
     def _create_background(self):
-        size = (self._size_x, len(self._model.entries) * self._get_entry_height())
-        surface = pygame.Surface(size)
+        width = self._size_x
+        height = len(self._model.entries) * self._get_entry_height() - 1
+        surface = pygame.Surface((width, height))
         surface.fill(self._BACKGROUND_COLOR)
         surface.set_alpha(self._BACKGROUND_COLOR.a)
         return surface
