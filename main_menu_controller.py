@@ -19,6 +19,9 @@ class MainMenuController:
             main_menu_model.Entry('Quit', quit_func, does_close_menu=False),
         ])
         self._view = main_menu_view.MainMenuView(self._model)
+
+        self._on_entry_index_changed()
+
         self._is_dirty = False
 
     def is_enabled(self):
@@ -62,19 +65,23 @@ class MainMenuController:
 
         if modified_key == self._KEY_SELECT_CURRENT_MENU_ITEM:
             self._select_current_menu_item()
-            self._is_dirty = True
         elif modified_key == self._KEY_UP:
-            self._model.change_current_index(-1)
-            self._is_dirty = True
+            self._change_entry_index(-1)
         elif modified_key == self._KEY_DOWN:
-            self._model.change_current_index(1)
-            self._is_dirty = True
+            self._change_entry_index(1)
         return True
 
     def _select_current_menu_item(self):
         entry = self._model.get_current_entry()
         entry.select()
         self._view.on_menu_item_selected()
+
+    def _change_entry_index(self, delta_index):
+        self._model.change_current_index(delta_index)
+        self._on_entry_index_changed()
+
+    def _on_entry_index_changed(self):
+        self._is_dirty = True
 
     def _get_game_action(self, modified_key):
         """
