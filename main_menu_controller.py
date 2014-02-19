@@ -5,6 +5,7 @@ import main_menu_view
 
 import pygame
 
+
 class MainMenuController:
     _KEY_SELECT_CURRENT_MENU_ITEM = key.ModifiedKey(pygame.K_RETURN)
     _KEY_UP = key.ModifiedKey(pygame.K_UP)
@@ -105,6 +106,7 @@ class MainMenuController:
         @param modified_key a key.ModifiedKey
         """
         return self._game_key_binding_manager.get_action(modified_key)
+
 
 def run_tests():
     """

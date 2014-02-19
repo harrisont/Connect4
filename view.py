@@ -12,7 +12,7 @@ class ViewState:
 
 
 class DropAnimation:
-    _COEFFICIENT_OF_RESTITITION = 0.3 # Bounciness [0-1)
+    _COEFFICIENT_OF_RESTITITION = 0.3  # Bounciness [0-1)
 
     def __init__(self, piece, board_x, board_y_initial, board_y_final, bounce):
         self.piece = piece
@@ -59,7 +59,7 @@ class DropAnimation:
         return -time**2 + y0
 
     @classmethod
-    def _create_get_y_after_1_bounces_func(classobj, board_y_initial, board_y_final):
+    def _create_get_y_after_1_bounces_func(cls, board_y_initial, board_y_final):
         """
         @return a function y(t) that returns the board-y position after the first bounce.
         y(t) satisfies the following constraints:
@@ -72,7 +72,7 @@ class DropAnimation:
         y0 = board_y_initial
         yf = board_y_final
         dy = y0 - yf
-        c =  classobj._COEFFICIENT_OF_RESTITITION
+        c = cls._COEFFICIENT_OF_RESTITITION
         constant_1 = 2*math.sqrt(dy)*(1+c)
         constant_2 = yf - dy - 2*dy*c
         return lambda time: -time**2 + constant_1*time + constant_2
@@ -106,7 +106,7 @@ class View:
     _BOARD_OPENING_MARGIN = 15
 
     _ANIMATION_SPEED_MULTIPLIER = 8
-    _DRAW_DROP_X_DELAY_AFTER_DROP = 1 / _ANIMATION_SPEED_MULTIPLIER # seconds
+    _DRAW_DROP_X_DELAY_AFTER_DROP = 1 / _ANIMATION_SPEED_MULTIPLIER  # seconds
 
     def __init__(self, view_model):
         self.reset()
@@ -132,7 +132,7 @@ class View:
         self._state = ViewState.PLAYING
         self._last_tracked_num_drops = 0
         self._last_drop_x = -1
-        self._time_since_last_drop = 1000000 # large number
+        self._time_since_last_drop = 1000000  # large number
         self._dirty = True
 
     def draw(self, drop_x):

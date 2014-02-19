@@ -31,7 +31,7 @@ def run_doctests(module, module_dependencies=None):
             if module in tested_modules:
                 continue
             current_test_results, current_tested_modules = module.run_tests()
-            test_results = tuple(x + y for x,y in zip(test_results, current_test_results))
+            test_results = tuple(x + y for x, y in zip(test_results, current_test_results))
             tested_modules.update(current_tested_modules)
 
     return test_results, tested_modules

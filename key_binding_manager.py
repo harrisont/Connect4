@@ -25,7 +25,7 @@ class KeyBindingManager:
             Action.MOVE_LEFT: self._KEY_MOVE_LEFT,
             Action.MOVE_RIGHT: self._KEY_MOVE_RIGHT,
             Action.TOGGLE_MAIN_MENU: self._KEY_TOGGLE_MAIN_MENU,
-            }
+        }
         self._on_action_to_key_map_changed()
 
     def _on_action_to_key_map_changed(self):
