@@ -22,18 +22,21 @@ class MainMenuView:
     _FONT_COLOR = pygame.Color(255, 255, 255)
     _FONT_HOVER_COLOR = pygame.Color(0, 0, 0)
     _FADE_ANIMATION_SPEED = 5
+    _CONTROLS_FONT_SIZE = 50
 
     def __init__(self, model):
         self._model = model
 
         pygame.init()
         self._font = pygame.font.Font(None, self._FONT_SIZE)
+        self._controls_font = pygame.font.Font(None, self._CONTROLS_FONT_SIZE)
 
-        self._size_x = self._calculate_size_x()
-
+        self._entries_size_x = self._calculate_entries_size_x()
         self._fade_animation = None
+        self._is_right_area_enabled = False
+        self._right_area_width = self._calculate_controls_size_x()
 
-    def _calculate_size_x(self):
+    def _calculate_entries_size_x(self):
         max_entry_size_x = 0
         for entry in self._model.entries:
             entry_size_x, entry_size_y = self._font.size(entry.text)
@@ -46,6 +49,8 @@ class MainMenuView:
 
             self._draw_selection(background_surface, self._get_current_entry_position())
             self._draw_entries(background_surface)
+            if self._is_right_area_enabled:
+                self._draw_right_area(background_surface)
 
             screen.blit(background_surface, self._POSITION)
 
@@ -53,7 +58,9 @@ class MainMenuView:
             self._draw_fade_animation(screen)
 
     def _create_background(self):
-        width = self._size_x
+        width = self._entries_size_x
+        if self._is_right_area_enabled:
+            width += self._right_area_width
         height = len(self._model.entries) * self._get_entry_height() - 1
         surface = pygame.Surface((width, height))
         surface.fill(self._BACKGROUND_COLOR)
@@ -85,7 +92,26 @@ class MainMenuView:
         screen.blit(surface, position)
 
     def _get_selection_size(self):
-        return self._size_x, self._get_entry_height()
+        return self._entries_size_x, self._get_entry_height()
+
+    def _draw_right_area(self, screen):
+        right_area_rect = pygame.Rect(self._entries_size_x, 0, self._right_area_width, screen.get_height())
+        screen.fill(self._SELECTION_COLOR, right_area_rect)
+
+        for control_index, control_line in enumerate(self._model.get_control_lines()):
+            message_surface = self._controls_font.render(control_line, True, self._FONT_HOVER_COLOR)
+            controls_text_position = (
+                self._entries_size_x + self._ENTRY_TEXT_PADDING_X,
+                self._ENTRY_TEXT_PADDING_X + control_index * 1.1 * self._controls_font.get_linesize()
+            )
+            screen.blit(message_surface, controls_text_position)
+
+    def _calculate_controls_size_x(self):
+        max_size_x = 0
+        for control_line in self._model.get_control_lines():
+            size_x, size_y = self._controls_font.size(control_line)
+            max_size_x = max(max_size_x, size_x)
+        return max_size_x + 2*self._ENTRY_TEXT_PADDING_X
 
     def _draw_fade_animation(self, screen):
         animation_surface = pygame.Surface(self._get_selection_size())
@@ -118,6 +144,9 @@ class MainMenuView:
         if self._fade_animation:
             if self._fade_animation.fade(self._FADE_ANIMATION_SPEED):
                 self._fade_animation = None
+
+    def set_right_area_enabled(self, is_enabled):
+        self._is_right_area_enabled = is_enabled
 
 
 def run_tests():
