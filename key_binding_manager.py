@@ -58,12 +58,15 @@ class KeyBindingManager:
         """
         return self._key_to_action_map.get(modified_key)
 
+    def get_control_lines(self):
+        return (
+            'Menu: {}'.format(self.get_key(Action.TOGGLE_MAIN_MENU)),
+            'Drop: {}'.format(self.get_key(Action.DROP_PIECE)),
+            'Move: {}/{}'.format(self.get_key(Action.MOVE_LEFT), self.get_key(Action.MOVE_RIGHT)),
+        )
+
     def print_controls(self):
-        print('Controls:')
-        print('\t{}: Toggle Menu'.format(self.get_key(Action.TOGGLE_MAIN_MENU)))
-        print('\t{}: Quit'.format(self.get_key(Action.QUIT)))
-        print('\t{}: Drop Piece'.format(self.get_key(Action.DROP_PIECE)))
-        print('\t{}/{}: Move'.format(self.get_key(Action.MOVE_LEFT), self.get_key(Action.MOVE_RIGHT)))
+        print('\n'.join(self.get_control_lines()))
 
 
 def run_tests():
