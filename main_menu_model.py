@@ -20,8 +20,9 @@ class Entry:
 
 
 class MainMenuModel:
-    def __init__(self, entries):
+    def __init__(self, entries, game_key_binding_manager):
         self.entries = entries
+        self._game_key_binding_manager = game_key_binding_manager
         self.current_index = 0
 
     def change_current_index(self, delta_index):
@@ -29,6 +30,9 @@ class MainMenuModel:
 
     def get_current_entry(self):
         return self.entries[self.current_index]
+
+    def get_control_lines(self):
+        return self._game_key_binding_manager.get_control_lines()
 
 
 def run_tests():

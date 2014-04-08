@@ -14,7 +14,7 @@ class MainMenuController:
     def __init__(self, game_key_binding_manager, new_game_func, quit_func):
         self._game_key_binding_manager = game_key_binding_manager
         self._is_enabled = True
-        self._model = main_menu_model.MainMenuModel([
+        entries = [
             main_menu_model.Entry('New Game',
                                   on_select_func=self._get_toggle_then_call_func_func(new_game_func),
                                   on_hover_start_func=None,
@@ -22,15 +22,16 @@ class MainMenuController:
                                   does_close_menu=True),
             main_menu_model.Entry('Controls',
                                   on_select_func=None,
-                                  on_hover_start_func=lambda: print('TODO(#6): show controls menu'),
-                                  on_hover_end_func=lambda: print('TODO(#6): hide controls menu'),
+                                  on_hover_start_func=lambda: self._view.set_right_area_enabled(True),
+                                  on_hover_end_func=lambda: self._view.set_right_area_enabled(False),
                                   does_close_menu=False),
             main_menu_model.Entry('Quit',
                                   on_select_func=quit_func,
                                   on_hover_start_func=None,
                                   on_hover_end_func=None,
                                   does_close_menu=False),
-        ])
+        ]
+        self._model = main_menu_model.MainMenuModel(entries, self._game_key_binding_manager)
         self._view = main_menu_view.MainMenuView(self._model)
 
         self._on_entry_index_changed()
