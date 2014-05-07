@@ -12,7 +12,7 @@ class ViewState:
 
 
 class DropAnimation:
-    _COEFFICIENT_OF_RESTITITION = 0.3  # Bounciness [0-1)
+    _COEFFICIENT_OF_RESTITUTION = 0.3  # Bounciness [0-1)
 
     def __init__(self, piece, board_x, board_y_initial, board_y_final, bounce):
         self.piece = piece
@@ -72,7 +72,7 @@ class DropAnimation:
         y0 = board_y_initial
         yf = board_y_final
         dy = y0 - yf
-        c = cls._COEFFICIENT_OF_RESTITITION
+        c = cls._COEFFICIENT_OF_RESTITUTION
         constant_1 = 2*math.sqrt(dy)*(1+c)
         constant_2 = yf - dy - 2*dy*c
         return lambda time: -time**2 + constant_1*time + constant_2
