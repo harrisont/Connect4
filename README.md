@@ -2,6 +2,8 @@ Connect4
 ========
 A Connect Four clone
 
+![Screenshot](Screenshot.png)
+
 Usage
 -----
 Run `connect4.py`.
