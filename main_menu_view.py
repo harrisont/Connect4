@@ -27,7 +27,6 @@ class MainMenuView:
     def __init__(self, model):
         self._model = model
 
-        pygame.init()
         self._font = pygame.font.Font(None, self._FONT_SIZE)
         self._controls_font = pygame.font.Font(None, self._CONTROLS_FONT_SIZE)
 

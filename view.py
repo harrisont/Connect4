@@ -114,7 +114,6 @@ class View:
         self._drop_animations = []
         self._additional_layers = []
 
-        pygame.init()
         pygame.display.set_caption('Connect Four')
         self._fps_clock = pygame.time.Clock()
         self._font = pygame.font.Font(None, self._FONT_SIZE)

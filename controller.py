@@ -23,6 +23,12 @@ class Controller:
     _BOARD_SIZE_Y = 6
 
     def __init__(self):
+        # Hack for init failing in CI (I think because of no audio device).
+        # We need to only init certain modules.
+        pygame.font.init()
+        pygame.display.init()
+        #pygame.init()
+
         self._model = model.Model(self._CONSECUTIVE_PIECES_TO_WIN, (self._BOARD_SIZE_X, self._BOARD_SIZE_Y))
         self._view = None
         self._key_binding_manager = key_binding_manager.KeyBindingManager()
@@ -30,8 +36,6 @@ class Controller:
                                                                              self._reset_game,
                                                                              self._quit)
         self._reset_game()
-
-        pygame.init()
 
     def _reset_game(self):
         # This needs to be done before the model is reset.
