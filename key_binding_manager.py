@@ -1,3 +1,6 @@
+from types import ModuleType
+from typing import Set, Tuple
+
 import key
 
 import pygame
@@ -69,14 +72,14 @@ class KeyBindingManager:
         print('\n'.join(self.get_control_lines()))
 
 
-def run_tests():
+def run_tests(headless: bool) -> Tuple[Tuple[int, int], Set[ModuleType]]:
     """
-    @return (failure_count, test_count)
+    @return ((failure_count, test_count), tested_modules)
     """
     import sys
     import test
-    return test.run_doctests(sys.modules[__name__], module_dependencies=[key])
+    return test.run_doctests(sys.modules[__name__], module_dependencies=[key], headless=headless)
 
 
 if __name__ == '__main__':
-    run_tests()
+    run_tests(headless=False)

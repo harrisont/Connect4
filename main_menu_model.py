@@ -1,3 +1,7 @@
+from types import ModuleType
+from typing import Set, Tuple
+
+
 class Entry:
     def __init__(self, text, on_select_func, on_hover_start_func, on_hover_end_func, does_close_menu):
         self.text = text
@@ -35,14 +39,14 @@ class MainMenuModel:
         return self._game_key_binding_manager.get_control_lines()
 
 
-def run_tests():
+def run_tests(headless: bool) -> Tuple[Tuple[int, int], Set[ModuleType]]:
     """
-    @return (failure_count, test_count)
+    @return ((failure_count, test_count), tested_modules)
     """
     import sys
     import test
-    return test.run_doctests(sys.modules[__name__], module_dependencies=[])
+    return test.run_doctests(sys.modules[__name__], module_dependencies=[], headless=headless)
 
 
 if __name__ == '__main__':
-    run_tests()
+    run_tests(headless=False)

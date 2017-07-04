@@ -1,3 +1,7 @@
+import sys
+from types import ModuleType
+from typing import Set, Tuple
+
 import key
 import key_binding_manager
 import main_menu_controller
@@ -6,7 +10,6 @@ import view
 
 import pygame
 
-import sys
 
 
 class Controller:
@@ -133,9 +136,9 @@ class Controller:
         return self._model.winning_player is None
 
 
-def run_tests():
+def run_tests(headless: bool) -> Tuple[Tuple[int, int], Set[ModuleType]]:
     """
-    @return (failure_count, test_count)
+    @return ((failure_count, test_count), tested_modules)
     """
     import sys
     import test
@@ -144,8 +147,9 @@ def run_tests():
                                                   key_binding_manager,
                                                   main_menu_controller,
                                                   model,
-                                                  view])
+                                                  view],
+                             headless=headless)
 
 
 if __name__ == '__main__':
-    run_tests()
+    run_tests(headless=False)

@@ -10,12 +10,15 @@ e.g.
     D
 Here D's run_tests function is called twice: once each for B and C.
 """
+from types import ModuleType
+from typing import Set, Tuple
 
 
-def run_doctests(module, module_dependencies=None):
+def run_doctests(module, module_dependencies, headless: bool) -> Tuple[Tuple[int, int], Set[ModuleType]]:
     """
     @param module the module to test
     @param module_dependencies iterable(module-with-run_tests-method)
+    @param headless If running in headless mode
     @return ((failure_count, test_count), tested_modules)
     """
     import doctest
@@ -30,7 +33,7 @@ def run_doctests(module, module_dependencies=None):
         for module in module_dependencies:
             if module in tested_modules:
                 continue
-            current_test_results, current_tested_modules = module.run_tests()
+            current_test_results, current_tested_modules = module.run_tests(headless)
             test_results = tuple(x + y for x, y in zip(test_results, current_test_results))
             tested_modules.update(current_tested_modules)
 
