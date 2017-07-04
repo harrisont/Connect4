@@ -2,3 +2,6 @@ language: python
 python:
   - "3.6"
 script: python run_tests.py
+env:
+  # No audio device in CI
+  - AUDIODEV=null
