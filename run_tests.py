@@ -1,13 +1,14 @@
+import argparse
 import sys
 
 import connect4
 
 
 def _main():
-    # TODO: read from argument
-    headless = True
-
-    (failure_count, test_count), tested_modules = connect4.run_tests(headless)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--headless', action='store_true')
+    args = parser.parse_args()
+    (failure_count, test_count), tested_modules = connect4.run_tests(args.headless)
     if failure_count:
         sys.exit(1)
 
