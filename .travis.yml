@@ -1,0 +1,4 @@
+language: python
+python:
+  - "3.6"
+script: todo_my_test_script
