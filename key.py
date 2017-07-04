@@ -39,8 +39,9 @@ class ModifiedKey:
 
     def __str__(self):
         """
-        >>> pygame.init() # doctest:+ELLIPSIS
-        (...)
+        >>> (num_pass, num_fail) = pygame.init()
+        >>> num_fail == 0
+        True
 
         >>> pygame.key.name(pygame.K_a)
         'a'
