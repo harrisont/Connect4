@@ -42,6 +42,9 @@ class ModifiedKey:
         >>> pygame.init() # doctest:+ELLIPSIS
         (...)
 
+        >>> pygame.key.name(pygame.K_a)
+        'a'
+
         >>> a = ModifiedKey(pygame.K_a)
         >>> str(a)
         'a'
