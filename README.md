@@ -2,6 +2,8 @@ Connect4
 ========
 A Connect Four clone
 
+[![Build Status](https://travis-ci.org/harrisont/Connect4.svg?branch=master)](https://travis-ci.org/harrisont/Connect4)
+
 ![Screenshot](Screenshot.png)
 
 Usage
