@@ -1,3 +1,6 @@
+from types import ModuleType
+from typing import Set, Tuple
+
 import key
 import key_binding_manager
 import main_menu_model
@@ -109,9 +112,9 @@ class MainMenuController:
         return self._game_key_binding_manager.get_action(modified_key)
 
 
-def run_tests():
+def run_tests(headless: bool) -> Tuple[Tuple[int, int], Set[ModuleType]]:
     """
-    @return (failure_count, test_count)
+    @return ((failure_count, test_count), tested_modules)
     """
     import sys
     import test
@@ -119,7 +122,8 @@ def run_tests():
                              module_dependencies=[key,
                                                   key_binding_manager,
                                                   main_menu_model,
-                                                  main_menu_view])
+                                                  main_menu_view],
+                             headless=headless)
 
 if __name__ == '__main__':
-    run_tests()
+    run_tests(headless=False)

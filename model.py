@@ -1,3 +1,7 @@
+from types import ModuleType
+from typing import Set, Tuple
+
+
 class Piece:
     NONE = 0
     PLAYER1 = 1
@@ -487,14 +491,14 @@ class Model:
         return string
 
 
-def run_tests():
+def run_tests(headless: bool) -> Tuple[Tuple[int, int], Set[ModuleType]]:
     """
-    @return (failure_count, test_count)
+    @return ((failure_count, test_count), tested_modules)
     """
     import sys
     import test
-    return test.run_doctests(sys.modules[__name__], module_dependencies=[])
+    return test.run_doctests(sys.modules[__name__], module_dependencies=[], headless=headless)
 
 
 if __name__ == '__main__':
-    run_tests()
+    run_tests(headless=False)
