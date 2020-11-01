@@ -2,14 +2,15 @@ import sys
 from types import ModuleType
 from typing import Set, Tuple
 
+import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
+import pygame
+
 import key
 import key_binding_manager
 import main_menu_controller
 import model
 import view
-
-import pygame
-
 
 
 class Controller:
