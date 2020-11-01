@@ -60,7 +60,7 @@ class Controller:
     @staticmethod
     def _quit():
         pygame.quit()
-        sys.exit()
+        sys.exit(0)
 
     def _handle_events(self):
         for event in pygame.event.get():
