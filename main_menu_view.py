@@ -77,11 +77,13 @@ class MainMenuView:
     def _draw_entry(self, screen, index, position):
         if index == self._model.current_index:
             color = self._FONT_HOVER_COLOR
+            background_color = self._SELECTION_COLOR
         else:
             color = self._FONT_COLOR
+            background_color = self._BACKGROUND_COLOR
 
         entry = self._model.entries[index]
-        message_surface = self._font.render(entry.text, True, color)
+        message_surface = self._font.render(entry.text, True, color, background_color)
         screen.blit(message_surface, position)
 
     def _get_entry_text_position(self, entry_index):
@@ -99,10 +101,11 @@ class MainMenuView:
 
     def _draw_right_area(self, screen):
         right_area_rect = pygame.Rect(self._entries_size_x, 0, self._right_area_width, screen.get_height())
-        screen.fill(self._SELECTION_COLOR, right_area_rect)
+        background_color = self._SELECTION_COLOR
+        screen.fill(background_color, right_area_rect)
 
         for control_index, control_line in enumerate(self._model.get_control_lines()):
-            message_surface = self._controls_font.render(control_line, True, self._FONT_HOVER_COLOR)
+            message_surface = self._controls_font.render(control_line, True, self._FONT_HOVER_COLOR, background_color)
             controls_text_position = (
                 self._entries_size_x + self._ENTRY_TEXT_PADDING_X,
                 self._ENTRY_TEXT_PADDING_X + control_index * 1.1 * self._controls_font.get_linesize()
